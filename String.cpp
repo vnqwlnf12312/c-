@@ -2,10 +2,6 @@
 #include <cstring>
 
 class String {
- private:
-  void enlarge_capacity_();
-  bool is_equal(const String&, size_t) const;
-  void swap(String& str);
  public:
   size_t length() const;
   size_t size() const;
@@ -89,6 +85,10 @@ class String {
   ~String() {
     delete[] array_;
   }
+ private:
+  void enlarge_capacity_();
+  bool is_equal(const String&, size_t) const;
+  void swap(String& str);  
 };
 
 void String::enlarge_capacity_() {
