@@ -32,7 +32,7 @@ class String {
   char& operator[](size_t index) {
     return array_[index];
   }
-  
+
   const char& operator[](size_t index) const {
     return array_[index];
   }
@@ -229,12 +229,7 @@ bool operator==(const String& a, const String& b) {
   if (a.length() != b.length()) {
     return false;
   }
-  for (size_t i = 0; i < b.length(); ++i) {
-    if (a[i] != b[i]) {
-      return false;
-    }
-  }
-  return true;
+  return std::memcmp(a.data(), b.data(), b.length()) == 0;
 }
 
 bool operator!=(const String& a, const String& b) {
