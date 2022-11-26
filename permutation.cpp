@@ -1,5 +1,6 @@
 #include <iostream>
-bool i_not_in_current(int*& current_indexes, int& cur_array, int& i) {
+
+bool i_not_in_current(int *&current_indexes, int &cur_array, int &i) {
   bool i_is_not_in_current = true;
   for (int j = 0; j < cur_array; ++j) {
     if (i == current_indexes[j]) {
@@ -8,7 +9,10 @@ bool i_not_in_current(int*& current_indexes, int& cur_array, int& i) {
   }
   return i_is_not_in_current;
 }
-void indexes_without_forbidden(int cur_array, int*& current_indexes, int*& sizes, int& argc, long long& answer, int**& arrays) {
+
+void indexes_without_forbidden(int cur_array, int *&current_indexes,
+                               int *&sizes, int &argc, long long &answer,
+                               int **&arrays) {
   if (cur_array == argc - 1 && argc != 1) {
     long long product = 1;
     for (int i = 0; i < argc - 1; ++i) {
@@ -21,13 +25,15 @@ void indexes_without_forbidden(int cur_array, int*& current_indexes, int*& sizes
   for (int i = 0; i < size; ++i) {
     if (i_not_in_current(current_indexes, cur_array, i)) {
       current_indexes[cur_array] = i;
-      indexes_without_forbidden(cur_array + 1, current_indexes, sizes, argc, answer, arrays);
+      indexes_without_forbidden(cur_array + 1, current_indexes, sizes, argc,
+                                answer, arrays);
     }
   }
 }
-int main(int argc, const char* argv[]) {
-  int** arrays = new int*[argc - 1];
-  int* sizes = new int[argc - 1];
+
+int main(int argc, const char *argv[]) {
+  int **arrays = new int *[argc - 1];
+  int *sizes = new int[argc - 1];
   for (int i = 1; i < argc; ++i) {
     sizes[i - 1] = std::atoi(argv[i]);
   }
@@ -39,7 +45,7 @@ int main(int argc, const char* argv[]) {
       std::cin >> arrays[i - 1][j];
     }
   }
-  int* current_indexes = new int[argc - 1];
+  int *current_indexes = new int[argc - 1];
   indexes_without_forbidden(0, current_indexes, sizes, argc, sum, arrays);
   std::cout << sum;
   for (int i = 0; i < argc - 1; ++i) {
@@ -49,4 +55,4 @@ int main(int argc, const char* argv[]) {
   delete[] sizes;
   delete[] current_indexes;
   return 0;
-}//aaafasfa
+}
