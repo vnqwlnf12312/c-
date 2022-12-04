@@ -70,9 +70,9 @@ class BigInteger {
 
   void Sum(const BigInteger&, long long, long long);
 
-  std::vector<long long> digits__;
-  long long base__ = 100000000;
-  bool is_negative__ = false;
+  std::vector<long long> digits_;
+  long long base_ = 100000000;
+  bool is_negative_ = false;
 };
 
 BigInteger::BigInteger() : digits_{0} {
