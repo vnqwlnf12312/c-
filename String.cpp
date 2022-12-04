@@ -3,93 +3,103 @@
 
 class String {
  public:
+  String(size_t n);
+
+  String(const char* str);
+
+  String(const size_t n, const char c);
+
+  String(const String& str);
+
+  String();
+
+  ~String();
+
   size_t length() const;
+
   size_t size() const;
+
   size_t capacity() const;
+
   void push_back(const char);
+
   void pop_back();
+
   char& front();
+
   const char& front() const;
+
   char& back();
+
   const char& back() const;
+
   size_t find(const String&) const;
-  size_t rfind(const String& substring) const;
-  String substr(size_t start, size_t count) const;
+
+  size_t rfind(const String&) const;
+
+  String substr(size_t, size_t) const;
+
   bool empty() const;
+
   void clear();
+
   void shrink_to_fit();
+
   char* data();
+
   const char* data() const;
 
+  char& operator[](size_t);
+
+  const char& operator[](size_t) const;
+
+  String& operator=(String);
+
+  String& operator+=(const String&);
+
+  String& operator+=(const char);
+
+ private:
   size_t size_ = 0;
   size_t capacity_ = 1;
   char* array_;
 
-  char& operator[](size_t index) {
-    return array_[index];
-  }
-
-  const char& operator[](size_t index) const {
-    return array_[index];
-  }
-
-  String& operator=(String str) {
-    swap(str);
-    return *this;
-  }
-
-  String& operator+=(const String& str) {
-    if (capacity_ < size_ + str.size_) {
-      char* to_delete = array_;
-      array_ = new char[size_ + str.size_ + 1];
-      capacity_ = size_ + str.size_;
-      memcpy(array_, to_delete, size_);
-      delete to_delete;
-    }
-    memcpy(array_ + size_, str.array_, str.size_ + 1);
-    size_ += str.size_;
-    return *this;
-  }
-
-  String& operator+=(const char a) {
-    push_back(a);
-    return *this;
-  }
-
-  String(size_t n) : size_(0), capacity_(n), array_(new char[n + 1]) {
-    array_[0] = '\0';
-  }
-
-  String(const char* str)
-      : size_(strlen(str)), capacity_(size_), array_(new char[size_ + 1]) {
-    memcpy(array_, str, size_ + 1);
-  }
-
-  String(const size_t n, const char c)
-      : size_(n), capacity_(n), array_(new char[n + 1]) {
-    memset(array_, c, n);
-    array_[n] = '\0';
-  }
-
-  String(const String& str)
-      : size_(str.size_),
-        capacity_(str.capacity_),
-        array_(new char[str.capacity_ + 1]) {
-    memcpy(array_, str.array_, size_ + 1);
-  }
-
-  String() : size_(0), capacity_(0), array_(new char[1]) {
-    array_[0] = '\0';
-  }
-
-  ~String() {
-    delete[] array_;
-  }
- private:
   void enlarge_capacity_();
+
   bool is_equal(const String&, size_t) const;
-  void swap(String& str);  
+
+  void swap(String& str);
 };
+
+String::String(size_t n) : size_(0), capacity_(n), array_(new char[n + 1]) {
+  array_[0] = '\0';
+}
+
+String::String(const char* str)
+    : size_(strlen(str)), capacity_(size_), array_(new char[size_ + 1]) {
+  memcpy(array_, str, size_ + 1);
+}
+
+String::String(const size_t n, const char c)
+    : size_(n), capacity_(n), array_(new char[n + 1]) {
+  memset(array_, c, n);
+  array_[n] = '\0';
+}
+
+String::String(const String& str)
+    : size_(str.size_),
+      capacity_(str.capacity_),
+      array_(new char[str.capacity_ + 1]) {
+  memcpy(array_, str.array_, size_ + 1);
+}
+
+String::String() : size_(0), capacity_(0), array_(new char[1]) {
+  array_[0] = '\0';
+}
+
+String::~String() {
+  delete[] array_;
+}
 
 void String::enlarge_capacity_() {
   capacity_ *= 2;
@@ -99,13 +109,8 @@ void String::enlarge_capacity_() {
   delete to_delete;
 }
 
-bool String::is_equal(const String& substring, size_t i) const {
-  for (size_t j = 0; j < substring.size_; ++j) {
-    if (array_[i + j] != substring.array_[j]) {
-      return false;
-    }
-  }
-  return true;
+bool String::is_equal(const String& substring, size_t index) const {
+  return std::memcmp(array_ + index, substring.data(), substring.length()) == 0;
 }
 
 void String::swap(String& str) {
@@ -209,69 +214,92 @@ const char* String::data() const {
   return array_;
 }
 
-std::istream& operator>>(std::istream& in, String& str) {
+char& String::operator[](size_t index) {
+  return array_[index];
+}
+
+const char& String::operator[](size_t index) const {
+  return array_[index];
+}
+
+String& String::operator=(String str) {
+  swap(str);
+  return *this;
+}
+
+String& String::operator+=(const String& str) {
+  if (capacity_ < size_ + str.size_) {
+    char* to_delete = array_;
+    array_ = new char[size_ + str.size_ + 1];
+    capacity_ = size_ + str.size_;
+    memcpy(array_, to_delete, size_);
+    delete to_delete;
+  }
+  memcpy(array_ + size_, str.array_, str.size_ + 1);
+  size_ += str.size_;
+  return *this;
+}
+
+String& String::operator+=(const char a) {
+  push_back(a);
+  return *this;
+}
+
+std::istream& operator>>(std::istream& input, String& str) {
   str.clear();
   char c;
-  while (in.get(c) && !isspace(c)) {
+  while (input.get(c) && !isspace(c)) {
     str.push_back(c);
   }
-  return in;
+  return input;
 }
 
-std::ostream& operator<<(std::ostream& out, const String& str) {
+std::ostream& operator<<(std::ostream& output, const String& str) {
   for (size_t i = 0; i < str.length(); ++i) {
-    out << str[i];
+    output << str[i];
   }
-  return out;
+  return output;
 }
 
-bool operator==(const String& a, const String& b) {
-  if (a.length() != b.length()) {
+bool operator==(const String& first, const String& second) {
+  if (first.length() != second.length()) {
     return false;
   }
-  return std::memcmp(a.data(), b.data(), b.length()) == 0;
+  return std::memcmp(first.data(), second.data(), second.length()) == 0;
 }
 
-bool operator!=(const String& a, const String& b) {
-  return !(a == b);
+bool operator!=(const String& first, const String& second) {
+  return !(first == second);
 }
 
-bool operator<(const String& a, const String& b) {
-  for (size_t i = 0; i < a.length() + 1; ++i) {
-    if (a[i] > b[i]) {
-      return false;
-    }
-    if (a[i] < b[i]) {
-      return true;
-    }
-  }
-  return false;
+bool operator<(const String& first, const String& second) {
+  return std::memcmp(first.data(), second.data(), second.length()) < 0;
 }
 
-bool operator>(const String& a, const String& b) {
-  return b < a;
+bool operator>(const String& first, const String& second) {
+  return second < first;
 }
 
-bool operator<=(const String& a, const String& b) {
-  return !(b < a);
+bool operator<=(const String& first, const String& second) {
+  return !(second < first);
 }
 
-bool operator>=(const String& a, const String& b) {
-  return !(a < b);
+bool operator>=(const String& first, const String& second) {
+  return !(first < second);
 }
 
-String operator+(const String a, const String b) {
-  String result = a;
-  result += b;
+String operator+(const String first, const String second) {
+  String result = first;
+  result += second;
   return result;
 }
 
-String operator+(String a, const char b) {
-  a.push_back(b);
-  return a;
+String operator+(String first, const char second) {
+  first.push_back(second);
+  return first;
 }
 
-String operator+(char a, const String b) {
-  String a_to_string(1, a);
-  return a_to_string += b;
+String operator+(char first, const String second) {
+  String a_to_string(1, first);
+  return a_to_string += second;
 }
