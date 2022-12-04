@@ -62,7 +62,7 @@ class BigInteger {
 
   void DeleteZeroes();
 
-  BigInteger& MoveDigits(size_t n);
+  BigInteger& Movedigits_(size_t n);
 
   bool sign_is_unchanged(const BigInteger&) const;
 
@@ -70,24 +70,24 @@ class BigInteger {
 
   void Sum(const BigInteger&, long long, long long);
 
-  std::vector<long long> digits;
-  long long base = 100000000;
-  bool is_negative = false;
+  std::vector<long long> digits__;
+  long long base__ = 100000000;
+  bool is_negative__ = false;
 };
 
-BigInteger::BigInteger() : digits{0} {
+BigInteger::BigInteger() : digits_{0} {
 }
 
 BigInteger::BigInteger(size_t size) {
-  digits.resize(size);
+  digits_.resize(size);
 }
 
 BigInteger::BigInteger(unsigned long long number) {
   if (number == 0) {
-    digits.push_back(0);
+    digits_.push_back(0);
   }
   while (number > 0) {
-    digits.push_back(static_cast<long long>(number % base));
+    digits_.push_back(static_cast<long long>(number % base_));
     number /= 100000000;
   }
   DeleteZeroes();
@@ -95,7 +95,7 @@ BigInteger::BigInteger(unsigned long long number) {
 
 BigInteger::BigInteger(long long number)
     : BigInteger(static_cast<unsigned long long>(std::abs(number))) {
-  is_negative = number < 0;
+  is_negative_ = number < 0;
 }
 
 BigInteger::BigInteger(int number)
@@ -103,27 +103,27 @@ BigInteger::BigInteger(int number)
 }
 
 void BigInteger::DeleteZeroes() {
-  size_t size = digits.size();
+  size_t size = digits_.size();
   for (size_t i = size; i > 1; --i) {
-    if (digits[i - 1] == 0) {
-      digits.pop_back();
+    if (digits_[i - 1] == 0) {
+      digits_.pop_back();
     } else {
       return;
     }
   }
 }
 
-BigInteger& BigInteger::MoveDigits(size_t n) {
+BigInteger& BigInteger::Movedigits_(size_t n) {
   if (n == 0) {
     return *this;
   }
-  digits.resize(digits.size() + n);
-  size_t new_size = digits.size();
+  digits_.resize(digits_.size() + n);
+  size_t new_size = digits_.size();
   for (size_t i = new_size; i > n; --i) {
-    digits[i - 1] = digits[i - 1 - n];
+    digits_[i - 1] = digits_[i - 1 - n];
   }
   for (size_t i = 0; i < n; ++i) {
-    digits[i] = 0;
+    digits_[i] = 0;
   }
   DeleteZeroes();
   return *this;
@@ -132,19 +132,19 @@ BigInteger& BigInteger::MoveDigits(size_t n) {
 bool BigInteger::AbsIsNotGreater(const BigInteger& first,
                                  const BigInteger& second,
                                  size_t second_start) {
-  size_t first_pointer = first.digits.size(),
-      second_pointer = second.digits.size();
-  if (second_start + first.digits.size() < second.digits.size()) {
+  size_t first_pointer = first.digits_.size(),
+      second_pointer = second.digits_.size();
+  if (second_start + first.digits_.size() < second.digits_.size()) {
     return true;
   }
-  if (second_start + first.digits.size() > second.digits.size()) {
+  if (second_start + first.digits_.size() > second.digits_.size()) {
     return false;
   }
   while (first_pointer > 0) {
-    if (second.digits[second_pointer - 1] < first.digits[first_pointer - 1]) {
+    if (second.digits_[second_pointer - 1] < first.digits_[first_pointer - 1]) {
       return false;
     }
-    if (second.digits[second_pointer - 1] > first.digits[first_pointer - 1]) {
+    if (second.digits_[second_pointer - 1] > first.digits_[first_pointer - 1]) {
       return true;
     }
     --first_pointer;
@@ -154,21 +154,21 @@ bool BigInteger::AbsIsNotGreater(const BigInteger& first,
 }
 
 bool operator<(const BigInteger& first, const BigInteger& second) {
-  if (first.is_negative != second.is_negative) {
-    return first.is_negative;
+  if (first.is_negative_ != second.is_negative_) {
+    return first.is_negative_;
   }
-  if (first.digits.size() < second.digits.size()) {
-    return !first.is_negative;
+  if (first.digits_.size() < second.digits_.size()) {
+    return !first.is_negative_;
   }
-  if (first.digits.size() > second.digits.size()) {
-    return first.is_negative;
+  if (first.digits_.size() > second.digits_.size()) {
+    return first.is_negative_;
   }
-  for (size_t i = first.digits.size(); i > 0; --i) {
-    if (first.digits[i - 1] < second.digits[i - 1]) {
-      return !first.is_negative;
+  for (size_t i = first.digits_.size(); i > 0; --i) {
+    if (first.digits_[i - 1] < second.digits_[i - 1]) {
+      return !first.is_negative_;
     }
-    if (first.digits[i - 1] > second.digits[i - 1]) {
-      return first.is_negative;
+    if (first.digits_[i - 1] > second.digits_[i - 1]) {
+      return first.is_negative_;
     }
   }
   return false;
@@ -190,14 +190,14 @@ bool BigInteger::operator==(const BigInteger& second) const {
   if (!*this && !second) {
     return true;
   }
-  if (this->is_negative != second.is_negative) {
+  if (this->is_negative_ != second.is_negative_) {
     return false;
   }
-  if (this->digits.size() != second.digits.size()) {
+  if (this->digits_.size() != second.digits_.size()) {
     return false;
   }
-  for (size_t i = this->digits.size(); i > 0; --i) {
-    if (this->digits[i - 1] != second.digits[i - 1]) {
+  for (size_t i = this->digits_.size(); i > 0; --i) {
+    if (this->digits_[i - 1] != second.digits_[i - 1]) {
       return false;
     }
   }
@@ -222,7 +222,7 @@ std::istream& operator>>(std::istream& in, BigInteger& bigint) {
 }
 
 BigInteger::operator bool() const {
-  if (digits[0] == 0 && digits.size() == 1) {
+  if (digits_[0] == 0 && digits_.size() == 1) {
     return false;
   }
   return true;
@@ -236,78 +236,78 @@ bool is_same_sign(long long x, long long y) {
 }
 
 bool BigInteger::sign_is_unchanged(const BigInteger& second) const {
-  if (digits.size() > second.digits.size()
-      || !(is_negative ^ second.is_negative)) {
+  if (digits_.size() > second.digits_.size()
+      || !(is_negative_ ^ second.is_negative_)) {
     return true;
   }
-  if (second.digits.size() > digits.size()) {
+  if (second.digits_.size() > digits_.size()) {
     return false;
   }
-  for (size_t i = digits.size(); i > 0; --i) {
-    if (digits[i - 1] != second.digits[i - 1]) {
-      return digits[i - 1] > second.digits[i - 1];
+  for (size_t i = digits_.size(); i > 0; --i) {
+    if (digits_[i - 1] != second.digits_[i - 1]) {
+      return digits_[i - 1] > second.digits_[i - 1];
     }
   }
-  return !is_negative;
+  return !is_negative_;
 }
 
 void BigInteger::Sum(const BigInteger& second,
                      long long sign1,
                      long long sign2) {
-  size_t len_of_intersection = std::min(digits.size(), second.digits.size());
-  bool first_is_smaller = digits.size() < second.digits.size();
+  size_t len_of_intersection = std::min(digits_.size(), second.digits_.size());
+  bool first_is_smaller = digits_.size() < second.digits_.size();
   if (first_is_smaller) {
-    digits.resize(second.digits.size());
+    digits_.resize(second.digits_.size());
   }
   size_t i = 0;
   long long result, to_remember = 0;
   for (; i < len_of_intersection; ++i) {
-    result = digits[i] * sign1 + second.digits[i] * sign2 + to_remember;
+    result = digits_[i] * sign1 + second.digits_[i] * sign2 + to_remember;
     if (result < 0) {
-      result += base;
+      result += base_;
       to_remember = -1;
     } else {
       to_remember = 0;
     }
-    digits[i] = result % base;
-    to_remember += result / base;
+    digits_[i] = result % base_;
+    to_remember += result / base_;
   }
-  while ((to_remember != 0 || first_is_smaller) && i < digits.size()) {
+  while ((to_remember != 0 || first_is_smaller) && i < digits_.size()) {
     if (first_is_smaller || sign1 == -1) {
-      result = second.digits[i] + to_remember;
+      result = second.digits_[i] + to_remember;
     } else {
-      result = digits[i] + to_remember;
+      result = digits_[i] + to_remember;
     }
     if (result < 0) {
-      result += base;
+      result += base_;
       to_remember = -1;
     } else {
       to_remember = 0;
     }
-    digits[i] = result % base;
-    to_remember += result / base;
+    digits_[i] = result % base_;
+    to_remember += result / base_;
     ++i;
   }
   if (to_remember != 0) {
-    digits.push_back(abs(to_remember));
+    digits_.push_back(abs(to_remember));
   }
   DeleteZeroes();
 }
 
 BigInteger& BigInteger::operator+=(const BigInteger& second) {
-  if (is_negative == second.is_negative) {
+  if (is_negative_ == second.is_negative_) {
     Sum(second, 1, 1);
   } else {
     if (sign_is_unchanged(second)) {
       Sum(second, 1, -1);
     } else {
       Sum(second, -1, 1);
-      is_negative = !is_negative;
+      is_negative_ = !is_negative_;
     }
   }
   DeleteZeroes();
   if (!*this) {
-    is_negative = false;
+    is_negative_ = false;
   }
   return *this;
 }
@@ -319,11 +319,11 @@ BigInteger operator+(const BigInteger& first, const BigInteger& second) {
 
 BigInteger& BigInteger::operator-=(const BigInteger& second) {
   if (*this) {
-    is_negative = !is_negative;
+    is_negative_ = !is_negative_;
   }
   *this += second;
   if (*this) {
-    is_negative = !is_negative;
+    is_negative_ = !is_negative_;
   }
   return *this;
 }
@@ -335,40 +335,40 @@ BigInteger operator-(const BigInteger& first, const BigInteger& second) {
 
 BigInteger& BigInteger::operator*=(const BigInteger& other) {
   if (!other || !*this) {
-    digits = {0};
-    is_negative = false;
+    digits_ = {0};
+    is_negative_ = false;
     return *this;
   }
   if (other == 1) {
     return *this;
   }
   if (other == -1) {
-    is_negative = !is_negative;
+    is_negative_ = !is_negative_;
     return *this;
   }
-  size_t new_size = digits.size() + other.digits.size();
+  size_t new_size = digits_.size() + other.digits_.size();
   BigInteger prod(new_size);
-  prod.is_negative = is_negative ^ other.is_negative;
+  prod.is_negative_ = is_negative_ ^ other.is_negative_;
   long long to_remember = 0;
   long long result;
   size_t first_factor, second_factor;
   for (size_t i = 0; i < new_size; ++i) {
     result = to_remember;
     to_remember = 0;
-    if (i < other.digits.size()) {
+    if (i < other.digits_.size()) {
       first_factor = 0;
     } else {
-      first_factor = i - other.digits.size() + 1;
+      first_factor = i - other.digits_.size() + 1;
     }
     second_factor = i - first_factor + 1;
-    while (first_factor < digits.size() && second_factor > 0) {
-      result += digits[first_factor] * other.digits[second_factor - 1];
+    while (first_factor < digits_.size() && second_factor > 0) {
+      result += digits_[first_factor] * other.digits_[second_factor - 1];
       ++first_factor;
       --second_factor;
-      to_remember += result / base;
-      result %= base;
+      to_remember += result / base_;
+      result %= base_;
     }
-    prod.digits[i] = result;
+    prod.digits_[i] = result;
   }
   prod.DeleteZeroes();
   *this = prod;
@@ -381,20 +381,20 @@ BigInteger operator*(const BigInteger& first, const BigInteger& second) {
 }
 
 BigInteger& BigInteger::operator/=(const BigInteger& second) {
-  if (digits.size() < second.digits.size()) {
-    digits = {0};
-    is_negative = false;
+  if (digits_.size() < second.digits_.size()) {
+    digits_ = {0};
+    is_negative_ = false;
     return *this;
   }
-  BigInteger answer(digits.size() - second.digits.size() + 1);
-  size_t digit = answer.digits.size();
+  BigInteger answer(digits_.size() - second.digits_.size() + 1);
+  size_t digit = answer.digits_.size();
   long long left_border, right_border, mid;
   BigInteger middle;
   long long to_remember;
   while (digit > 0) {
     to_remember = 0;
     left_border = 0;
-    right_border = base - 1;
+    right_border = base_ - 1;
     while (right_border - left_border >= 0) {
       mid = (right_border + left_border) / 2;
       middle = mid;
@@ -405,14 +405,14 @@ BigInteger& BigInteger::operator/=(const BigInteger& second) {
         right_border = mid - 1;
       }
     }
-    answer.digits[digit - 1] = to_remember;
-    Sum((to_remember * second).MoveDigits(digit - 1), 1, -1);
+    answer.digits_[digit - 1] = to_remember;
+    Sum((to_remember * second).Movedigits_(digit - 1), 1, -1);
     --digit;
   }
-  answer.is_negative = is_negative ^ second.is_negative;
+  answer.is_negative_ = is_negative_ ^ second.is_negative_;
   *this = answer;
   if (!*this) {
-    is_negative = false;
+    is_negative_ = false;
   }
   DeleteZeroes();
   return *this;
@@ -436,7 +436,7 @@ BigInteger operator%(const BigInteger& first, const BigInteger& second) {
 BigInteger BigInteger::operator-() const {
   BigInteger result = *this;
   if (*this) {
-    result.is_negative = !is_negative;
+    result.is_negative_ = !is_negative_;
   }
   return result;
 }
@@ -465,41 +465,42 @@ BigInteger BigInteger::operator++(int) {
 
 std::string BigInteger::toString() const {
   std::string answer;
-  if (is_negative) {
+  answer.reserve(digits_.size());
+  if (is_negative_) {
     answer.push_back('-');
   }
   std::string digit;
-  answer += std::to_string(digits[digits.size() - 1]);
-  for (size_t i = digits.size() - 1; i > 0; --i) {
+  answer += std::to_string(digits_[digits_.size() - 1]);
+  for (size_t i = digits_.size() - 1; i > 0; --i) {
     for (size_t j = 0; j + digit.length() < 8; ++j) {
       answer.push_back('0');
     }
-    answer += std::to_string(digits[i - 1]);
+    answer += std::to_string(digits_[i - 1]);
   }
   return answer;
 }
 
 BigInteger::BigInteger(const std::string& string) {
   size_t end = 0;
-  is_negative = false;
+  is_negative_ = false;
   while (string[end] == '-' || string[end] == '+') {
     if (string[end] == '-') {
-      is_negative = !is_negative;
+      is_negative_ = !is_negative_;
     }
     ++end;
   }
   size_t size = string.length() - end;
-  digits.resize((size + 7) / 8);
+  digits_.resize((size + 7) / 8);
   size_t cur = 0;
   for (size_t i = size + end; i >= end + 8; i -= 8) {
-    digits[cur] = std::stoll(string.substr(i - 8, 8));
+    digits_[cur] = std::stoll(string.substr(i - 8, 8));
     ++cur;
   }
   if (size % 8 != 0) {
-    digits[cur] = std::stoll(string.substr(end, size % 8));
+    digits_[cur] = std::stoll(string.substr(end, size % 8));
   }
   if (!*this) {
-    is_negative = false;
+    is_negative_ = false;
   }
   DeleteZeroes();
 }
@@ -512,7 +513,7 @@ BigInteger operator "" _bi(unsigned long long number) {
 BigInteger operator "" _bi(const char* input, size_t) {
   BigInteger big_int(input);
   if (input[0] == '-') {
-    big_int.is_negative = true;
+    big_int.is_negative_ = true;
   }
   return big_int;
 }
@@ -527,7 +528,7 @@ class Rational {
 
   void CheckSigns();
 
-  long long base = 100000000;
+  long long base_ = 100000000;
  public:
   friend bool operator<(const Rational&, const Rational&);
 
@@ -717,7 +718,7 @@ std::string Rational::asDecimal(size_t precision) {
   Rational copy = *this;
   size_t divison_by_8 = precision / 8;
   for (size_t i = 0; i < divison_by_8; ++i) {
-    copy.numerator *= base;
+    copy.numerator *= base_;
   }
   for (size_t i = 0; i < precision % 8; ++i) {
     copy.numerator *= 10;
