@@ -465,7 +465,7 @@ BigInteger BigInteger::operator++(int) {
 
 std::string BigInteger::toString() const {
   std::string answer;
-  answer.reserve(digits_.size());
+  answer.reserve(digits_.size() * 8 + 1);
   if (is_negative_) {
     answer.push_back('-');
   }
