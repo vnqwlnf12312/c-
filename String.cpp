@@ -60,15 +60,17 @@ class String {
   String& operator+=(const char);
 
  private:
-  size_t size_ = 0;
-  size_t capacity_ = 1;
-  char* array_;
-
   void enlarge_capacity_();
 
   bool is_equal(const String&, size_t) const;
 
   void swap(String& str);
+ 
+  size_t size_ = 0;
+ 
+  size_t capacity_ = 1;
+ 
+  char* array_;
 };
 
 String::String(size_t n) : size_(0), capacity_(n), array_(new char[n + 1]) {
