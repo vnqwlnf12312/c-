@@ -470,12 +470,15 @@ std::string BigInteger::toString() const {
     answer.push_back('-');
   }
   std::string digit;
-  answer += std::to_string(digits_[digits_.size() - 1]);
+  digit.reserve(9);
+  digit = std::to_string(digits_[digits_.size() - 1]);
+  answer += digit;
   for (size_t i = digits_.size() - 1; i > 0; --i) {
     for (size_t j = 0; j + digit.length() < 8; ++j) {
       answer.push_back('0');
     }
-    answer += std::to_string(digits_[i - 1]);
+    digit = std::to_string(digits_[i - 1]);
+    answer += digit;
   }
   return answer;
 }
