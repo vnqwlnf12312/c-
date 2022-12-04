@@ -469,14 +469,12 @@ std::string BigInteger::toString() const {
     answer.push_back('-');
   }
   std::string digit;
-  digit = std::to_string(digits[digits.size() - 1]);
-  answer += digit;
+  answer += std::to_string(digits[digits.size() - 1]);
   for (size_t i = digits.size() - 1; i > 0; --i) {
-    digit = std::to_string(digits[i - 1]);
     for (size_t j = 0; j + digit.length() < 8; ++j) {
       answer.push_back('0');
     }
-    answer += digit;
+    answer += std::to_string(digits[i - 1]);
   }
   return answer;
 }
