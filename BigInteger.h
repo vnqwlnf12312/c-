@@ -21,7 +21,6 @@ class BigInteger {
 
   BigInteger();
 
-
   ~BigInteger() = default;
 
   friend bool operator<(const BigInteger&, const BigInteger&);
@@ -188,15 +187,8 @@ bool operator>=(const BigInteger& first, const BigInteger& second) {
   return !(first < second);
 }
 
-BigInteger& operator=(const BigInteger& second)
-
-:
-digits_(second
-.digits_),
-kBase_(second
-.kBase_),
-is_negative_(second
-.is_negative_) {
+BigInteger& BigInteger::operator=(const BigInteger& second) : digits_(second.digits_),
+                                  kBase_(second.kBase_), is_negative_(second.is_negative_) {
 }
 
 bool BigInteger::operator==(const BigInteger& second) const {
@@ -530,8 +522,6 @@ BigInteger operator "" _bi(const char* input, size_t) {
 
 class Rational {
  private:
-  BigInteger numerator;
-  BigInteger denominator;
 
   BigInteger FindGCF();
 
@@ -539,6 +529,8 @@ class Rational {
 
   void CheckSigns();
 
+  BigInteger numerator;
+  BigInteger denominator;
   const long long kBase_ = 100000000;
  public:
 
@@ -562,7 +554,7 @@ class Rational {
 
   friend bool operator<(const Rational&, const Rational&);
 
-  Rational& operator=(const Rational&) = default;
+  Rational& operator=(const Rational&);
 
   Rational& operator+=(const Rational&);
 
@@ -624,6 +616,10 @@ void Rational::CheckSigns() {
     denominator *= -1;
     numerator *= -1;
   }
+}
+
+Rational::Rational& operator=(const Rational& second) : numerator(second.numerator),
+                              denominator(second.denominator),kBase_(second.kBase_) {
 }
 
 Rational& Rational::operator+=(const Rational& second) {
