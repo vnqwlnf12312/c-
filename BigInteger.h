@@ -7,15 +7,20 @@
 
 class BigInteger {
  public:
-  explicit BigInteger(unsigned long long number);
-
-  explicit BigInteger(int number);
+  explicit BigInteger(unsigned long long number); // ull чтобы в _bi помещалось ull, мещерин писал что оно должно помещаться туда
 
   BigInteger(long long number);
 
+  explicit BigInteger(int number);
+
   BigInteger(const BigInteger& other) = default;
 
+  explicit BigInteger(size_t size);
+
+  explicit BigInteger(const std::string&);
+
   BigInteger();
+
 
   ~BigInteger() = default;
 
@@ -31,7 +36,7 @@ class BigInteger {
 
   bool operator==(const BigInteger& second) const;
 
-  BigInteger& operator=(const BigInteger& second) = default;
+  BigInteger& operator=(const BigInteger& second);
 
   BigInteger& operator+=(const BigInteger&);
 
@@ -56,22 +61,19 @@ class BigInteger {
   std::string toString() const;
 
  private:
-  explicit BigInteger(size_t size);
-
-  explicit BigInteger(const std::string&);
 
   void DeleteZeroes();
 
-  BigInteger& Movedigits_(size_t n);
+  BigInteger& MoveDigits(size_t n);
 
-  bool sign_is_unchanged(const BigInteger&) const;
+  bool SignIsUnchanged(const BigInteger&) const;
 
   bool AbsIsNotGreater(const BigInteger&, const BigInteger&, size_t);
 
   void Sum(const BigInteger&, long long, long long);
 
   std::vector<long long> digits_;
-  long long base_ = 100000000;
+  const long long kBase_ = 100000000;
   bool is_negative_ = false;
 };
 
@@ -87,8 +89,8 @@ BigInteger::BigInteger(unsigned long long number) {
     digits_.push_back(0);
   }
   while (number > 0) {
-    digits_.push_back(static_cast<long long>(number % base_));
-    number /= 100000000;
+    digits_.push_back(static_cast<long long>(number % kBase_));
+    number /= kBase_;
   }
   DeleteZeroes();
 }
@@ -113,7 +115,7 @@ void BigInteger::DeleteZeroes() {
   }
 }
 
-BigInteger& BigInteger::Movedigits_(size_t n) {
+BigInteger& BigInteger::MoveDigits(size_t n) {
   if (n == 0) {
     return *this;
   }
@@ -186,11 +188,22 @@ bool operator>=(const BigInteger& first, const BigInteger& second) {
   return !(first < second);
 }
 
+BigInteger& operator=(const BigInteger& second)
+
+:
+digits_(second
+.digits_),
+kBase_(second
+.kBase_),
+is_negative_(second
+.is_negative_) {
+}
+
 bool BigInteger::operator==(const BigInteger& second) const {
   if (!*this && !second) {
     return true;
   }
-  if (this->is_negative_ != second.is_negative_) {
+  if (is_negative_ != second.is_negative_) {
     return false;
   }
   if (this->digits_.size() != second.digits_.size()) {
@@ -222,20 +235,14 @@ std::istream& operator>>(std::istream& in, BigInteger& bigint) {
 }
 
 BigInteger::operator bool() const {
-  if (digits_[0] == 0 && digits_.size() == 1) {
-    return false;
-  }
-  return true;
+  return !digits_[0] == 0 && digits_.size() == 1;
 }
 
 bool is_same_sign(long long x, long long y) {
-  if ((x >= 0 && y >= 0) || (x < 0 && y < 0)) {
-    return true;
-  }
-  return false;
+  return (x >= 0 && y >= 0) || (x < 0 && y < 0);
 }
 
-bool BigInteger::sign_is_unchanged(const BigInteger& second) const {
+bool BigInteger::SignIsUnchanged(const BigInteger& second) const {
   if (digits_.size() > second.digits_.size()
       || !(is_negative_ ^ second.is_negative_)) {
     return true;
@@ -264,13 +271,13 @@ void BigInteger::Sum(const BigInteger& second,
   for (; i < len_of_intersection; ++i) {
     result = digits_[i] * sign1 + second.digits_[i] * sign2 + to_remember;
     if (result < 0) {
-      result += base_;
+      result += kBase_;
       to_remember = -1;
     } else {
       to_remember = 0;
     }
-    digits_[i] = result % base_;
-    to_remember += result / base_;
+    digits_[i] = result % kBase_;
+    to_remember += result / kBase_;
   }
   while ((to_remember != 0 || first_is_smaller) && i < digits_.size()) {
     if (first_is_smaller || sign1 == -1) {
@@ -279,13 +286,13 @@ void BigInteger::Sum(const BigInteger& second,
       result = digits_[i] + to_remember;
     }
     if (result < 0) {
-      result += base_;
+      result += kBase_;
       to_remember = -1;
     } else {
       to_remember = 0;
     }
-    digits_[i] = result % base_;
-    to_remember += result / base_;
+    digits_[i] = result % kBase_;
+    to_remember += result / kBase_;
     ++i;
   }
   if (to_remember != 0) {
@@ -298,7 +305,7 @@ BigInteger& BigInteger::operator+=(const BigInteger& second) {
   if (is_negative_ == second.is_negative_) {
     Sum(second, 1, 1);
   } else {
-    if (sign_is_unchanged(second)) {
+    if (SignIsUnchanged(second)) {
       Sum(second, 1, -1);
     } else {
       Sum(second, -1, 1);
@@ -365,8 +372,8 @@ BigInteger& BigInteger::operator*=(const BigInteger& other) {
       result += digits_[first_factor] * other.digits_[second_factor - 1];
       ++first_factor;
       --second_factor;
-      to_remember += result / base_;
-      result %= base_;
+      to_remember += result / kBase_;
+      result %= kBase_;
     }
     prod.digits_[i] = result;
   }
@@ -394,7 +401,7 @@ BigInteger& BigInteger::operator/=(const BigInteger& second) {
   while (digit > 0) {
     to_remember = 0;
     left_border = 0;
-    right_border = base_ - 1;
+    right_border = kBase_ - 1;
     while (right_border - left_border >= 0) {
       mid = (right_border + left_border) / 2;
       middle = mid;
@@ -406,7 +413,7 @@ BigInteger& BigInteger::operator/=(const BigInteger& second) {
       }
     }
     answer.digits_[digit - 1] = to_remember;
-    Sum((to_remember * second).Movedigits_(digit - 1), 1, -1);
+    Sum((to_remember * second).MoveDigits(digit - 1), 1, -1);
     --digit;
   }
   answer.is_negative_ = is_negative_ ^ second.is_negative_;
@@ -474,10 +481,10 @@ std::string BigInteger::toString() const {
   digit = std::to_string(digits_[digits_.size() - 1]);
   answer += digit;
   for (size_t i = digits_.size() - 1; i > 0; --i) {
+    digit = std::to_string(digits_[i - 1]);
     for (size_t j = 0; j + digit.length() < 8; ++j) {
       answer.push_back('0');
     }
-    digit = std::to_string(digits_[i - 1]);
     answer += digit;
   }
   return answer;
@@ -509,7 +516,7 @@ BigInteger::BigInteger(const std::string& string) {
 }
 
 BigInteger operator "" _bi(unsigned long long number) {
-  BigInteger big_int = number;
+  BigInteger big_int(number);
   return big_int;
 }
 
@@ -522,18 +529,18 @@ BigInteger operator "" _bi(const char* input, size_t) {
 }
 
 class Rational {
+ private:
   BigInteger numerator;
   BigInteger denominator;
 
   BigInteger FindGCF();
 
-  void reduce();
+  void Reduce();
 
   void CheckSigns();
 
-  long long base_ = 100000000;
+  const long long kBase_ = 100000000;
  public:
-  friend bool operator<(const Rational&, const Rational&);
 
   Rational() : numerator(1), denominator(1) {}
 
@@ -552,6 +559,8 @@ class Rational {
       : numerator(numerator), denominator(denominator) {
     CheckSigns();
   }
+
+  friend bool operator<(const Rational&, const Rational&);
 
   Rational& operator=(const Rational&) = default;
 
@@ -600,7 +609,7 @@ BigInteger Rational::FindGCF() {
   return second;
 }
 
-void Rational::reduce() {
+void Rational::Reduce() {
   if (numerator == 0) {
     denominator = 1;
     return;
@@ -621,7 +630,7 @@ Rational& Rational::operator+=(const Rational& second) {
   numerator = numerator * second.denominator + denominator * second.numerator;
   denominator *= second.denominator;
   CheckSigns();
-  reduce();
+  Reduce();
   return *this;
 }
 
@@ -646,7 +655,7 @@ Rational& Rational::operator*=(const Rational& second) {
   numerator *= second.numerator;
   denominator *= second.denominator;
   CheckSigns();
-  reduce();
+  Reduce();
   return *this;
 }
 
@@ -659,7 +668,7 @@ Rational& Rational::operator/=(const Rational& second) {
   numerator *= second.denominator;
   denominator *= second.numerator;
   CheckSigns();
-  reduce();
+  Reduce();
   return *this;
 }
 
@@ -721,7 +730,7 @@ std::string Rational::asDecimal(size_t precision) {
   Rational copy = *this;
   size_t divison_by_8 = precision / 8;
   for (size_t i = 0; i < divison_by_8; ++i) {
-    copy.numerator *= base_;
+    copy.numerator *= kBase_;
   }
   for (size_t i = 0; i < precision % 8; ++i) {
     copy.numerator *= 10;
