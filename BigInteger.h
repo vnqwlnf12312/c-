@@ -187,8 +187,9 @@ bool operator>=(const BigInteger& first, const BigInteger& second) {
   return !(first < second);
 }
 
-BigInteger& BigInteger::operator=(const BigInteger& second) : digits_(second.digits_),
-                                  kBase_(second.kBase_), is_negative_(second.is_negative_) {
+BigInteger& BigInteger::operator=(const BigInteger& second) {
+  digits_ = second.digits_;
+  is_negative = second.is_negative_;
   return *this;
 }
 
@@ -530,26 +531,26 @@ class Rational {
 
   void CheckSigns();
 
-  BigInteger numerator;
-  BigInteger denominator;
+  BigInteger numerator_;
+  BigInteger denominator_;
   const long long kBase_ = 100000000;
  public:
 
-  Rational() : numerator(1), denominator(1) {}
+  Rational() : numerator_(1), denominator_(1) {}
 
   Rational(const Rational& second) = default;
 
-  Rational(const BigInteger& big_int) : numerator(big_int), denominator(1) {}
+  Rational(const BigInteger& big_int) : numerator_(big_int), denominator_(1) {}
 
-  Rational(const BigInteger& numerator, const BigInteger& denominator)
-      : numerator(numerator), denominator(denominator) {
+  Rational(const BigInteger& numerator_, const BigInteger& denominator_)
+      : numerator_(numerator_), denominator_(denominator_) {
     CheckSigns();
   }
 
-  Rational(const int& integer) : numerator(integer), denominator(1) {}
+  Rational(const int& integer) : numerator_(integer), denominator_(1) {}
 
-  Rational(const int& numerator, const int& denominator)
-      : numerator(numerator), denominator(denominator) {
+  Rational(const int& numerator_, const int& denominator_)
+      : numerator_(numerator_), denominator_(denominator_) {
     CheckSigns();
   }
 
@@ -579,16 +580,16 @@ class Rational {
 BigInteger Rational::FindGCF() {
   BigInteger first, second;
   bool sign_is_changed = false;
-  if (numerator < 0) {
-    numerator *= -1;
+  if (numerator_ < 0) {
+    numerator_ *= -1;
     sign_is_changed = true;
   }
-  if (numerator > denominator) {
-    first = numerator;
-    second = denominator;
+  if (numerator_ > denominator_) {
+    first = numerator_;
+    second = denominator_;
   } else {
-    first = denominator;
-    second = numerator;
+    first = denominator_;
+    second = numerator_;
   }
   BigInteger remainder = first % second;
   while (remainder != 0) {
@@ -597,36 +598,37 @@ BigInteger Rational::FindGCF() {
     remainder = first % second;
   }
   if (sign_is_changed) {
-    numerator *= -1;
+    numerator_ *= -1;
   }
   return second;
 }
 
 void Rational::Reduce() {
-  if (numerator == 0) {
-    denominator = 1;
+  if (numerator_ == 0) {
+    denominator_ = 1;
     return;
   }
   BigInteger GCF = FindGCF();
-  numerator /= GCF;
-  denominator /= GCF;
+  numerator_ /= GCF;
+  denominator_ /= GCF;
 }
 
 void Rational::CheckSigns() {
-  if (denominator < 0) {
-    denominator *= -1;
-    numerator *= -1;
+  if (denominator_ < 0) {
+    denominator_ *= -1;
+    numerator_ *= -1;
   }
 }
 
-Rational::Rational& operator=(const Rational& second) : numerator(second.numerator),
-                              denominator(second.denominator),kBase_(second.kBase_) {
+Rational::Rational& operator=(const Rational& second) {
+  numerator_ = second.numerator_;
+  denominator_ = second.denominator_;
   return *this;
 }
 
 Rational& Rational::operator+=(const Rational& second) {
-  numerator = numerator * second.denominator + denominator * second.numerator;
-  denominator *= second.denominator;
+  numerator_ = numerator_ * second.denominator_ + denominator_ * second.numerator_;
+  denominator_ *= second.denominator_;
   CheckSigns();
   Reduce();
   return *this;
@@ -650,8 +652,8 @@ Rational operator-(const Rational& first, const Rational& second) {
 }
 
 Rational& Rational::operator*=(const Rational& second) {
-  numerator *= second.numerator;
-  denominator *= second.denominator;
+  numerator_ *= second.numerator_;
+  denominator_ *= second.denominator_;
   CheckSigns();
   Reduce();
   return *this;
@@ -663,8 +665,8 @@ Rational operator*(const Rational& first, const Rational& second) {
 }
 
 Rational& Rational::operator/=(const Rational& second) {
-  numerator *= second.denominator;
-  denominator *= second.numerator;
+  numerator_ *= second.denominator_;
+  denominator_ *= second.numerator_;
   CheckSigns();
   Reduce();
   return *this;
@@ -677,19 +679,19 @@ Rational operator/(const Rational& first, const Rational& second) {
 
 Rational Rational::operator-() {
   Rational result = *this;
-  result.numerator *= -1;
+  result.numerator_ *= -1;
   return result;
 }
 
 bool operator<(const Rational& first, const Rational& second) {
-  if (first.numerator < 0 && second.numerator > 0) {
+  if (first.numerator_ < 0 && second.numerator_ > 0) {
     return true;
   }
-  if (first.numerator > 0 && second.numerator < 0) {
+  if (first.numerator_ > 0 && second.numerator_ < 0) {
     return false;
   }
-  return (first.numerator * second.denominator)
-      < (first.denominator * second.numerator);
+  return (first.numerator_ * second.denominator_)
+      < (first.denominator_ * second.numerator_);
 }
 
 bool operator>(const Rational& first, const Rational& second) {
@@ -714,13 +716,13 @@ bool operator!=(const Rational& first, const Rational& second) {
 
 std::string Rational::toString() {
   std::string answer;
-  if (denominator == 1) {
-    answer += numerator.toString();
+  if (denominator_ == 1) {
+    answer += numerator_.toString();
     return answer;
   }
-  answer += numerator.toString();
+  answer += numerator_.toString();
   answer.push_back('/');
-  answer += denominator.toString();
+  answer += denominator_.toString();
   return answer;
 }
 
@@ -728,12 +730,12 @@ std::string Rational::asDecimal(size_t precision) {
   Rational copy = *this;
   size_t divison_by_8 = precision / 8;
   for (size_t i = 0; i < divison_by_8; ++i) {
-    copy.numerator *= kBase_;
+    copy.numerator_ *= kBase_;
   }
   for (size_t i = 0; i < precision % 8; ++i) {
-    copy.numerator *= 10;
+    copy.numerator_ *= 10;
   }
-  std::string answer = (copy.numerator / copy.denominator).toString();
+  std::string answer = (copy.numerator_ / copy.denominator_).toString();
   if (precision == 0) {
     return answer;
   }
