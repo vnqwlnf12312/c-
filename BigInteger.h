@@ -189,7 +189,7 @@ bool operator>=(const BigInteger& first, const BigInteger& second) {
 
 BigInteger& BigInteger::operator=(const BigInteger& second) {
   digits_ = second.digits_;
-  is_negative = second.is_negative_;
+  is_negative_ = second.is_negative_;
   return *this;
 }
 
@@ -620,7 +620,7 @@ void Rational::CheckSigns() {
   }
 }
 
-Rational::Rational& operator=(const Rational& second) {
+Rational& Rational::operator=(const Rational& second) {
   numerator_ = second.numerator_;
   denominator_ = second.denominator_;
   return *this;
