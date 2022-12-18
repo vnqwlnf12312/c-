@@ -1,859 +1,1856 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-bool IsSame(double a, double b) {
-  return std::abs(a - b) < 1e-8;
-}
-struct Point {
+bool IsSame                                                                                                                                           (
+double a, double b                                                                                                                                    )
+                                                                                                                                                      {
+  return std::abs                                                                                                                                     (
+a - b                                                                                                                                                 )
+ < 1e-8                                                                                                                                               ;
+                                                                                                                                                      }
+struct Point                                                                                                                                          {
  public:
-  double x;
-  double y;
+  double x                                                                                                                                            ;
+  double y                                                                                                                                            ;
 
-  Point();
 
-  Point(const double&, const double&);
+  Point                                                                                                                                               ();
 
-  Point(const Point&) = default;
 
-  Point& operator=(const Point&) = default;
+  Point                                                                                                                                               (
+const double&, const double&                                                                                                                          );
 
-  bool operator==(const Point&) const;
 
-  bool operator!=(const Point&) const;
+  Point                                                                                                                                               (
+const Point&                                                                                                                                          )
+ = default                                                                                                                                            ;
 
-  Point& operator+=(const Point&);
 
-  Point& operator-=(const Point&);
-  Point operator-() const;
+  Point& operator=                                                                                                                                    (
+const Point&                                                                                                                                          )
+ = default                                                                                                                                            ;
 
-  Point& operator*=(double);
-  Point& operator/=(double);
 
-  Point& rotate(const Point&, double);
+  bool operator==                                                                                                                                     (
+const Point&                                                                                                                                          )
+ const                                                                                                                                                ;
 
-  Point& reflect(const Point&);
 
-  Point& scale(const Point&, double);
-  double ScalarProd(const Point&) const;
-  double VectorProd(const Point&) const;
-};
+  bool operator!=                                                                                                                                     (
+const Point&                                                                                                                                          )
+ const                                                                                                                                                ;
 
-Point::Point() : x(0), y(0) {
-}
 
-Point::Point(const double& x, const double& y) : x(x), y(y) {
-}
+  Point& operator+=                                                                                                                                   (
+const Point&                                                                                                                                          );
 
-bool Point::operator==(const Point& second) const {
-  return IsSame(x, second.x) && IsSame(y, second.y);
-}
 
-bool Point::operator!=(const Point& second) const {
-  return !(*this == second);
-}
+  Point& operator-=                                                                                                                                   (
+const Point&                                                                                                                                          );
+  Point operator-                                                                                                                                     ()
+ const                                                                                                                                                ;
 
-Point& Point::operator+=(const Point& second) {
-  x += second.x;
-  y += second.y;
-  return *this;
-}
 
-Point operator+(const Point& first, const Point& second) {
-  Point result = first;
-  return result += second;
-}
+  Point& operator*=                                                                                                                                   (
+double                                                                                                                                                );
+  Point& operator/=                                                                                                                                   (
+double                                                                                                                                                );
 
-Point& Point::operator-=(const Point& second) {
-  x -= second.x;
-  y -= second.y;
-  return *this;
-}
 
-Point Point::operator-() const {
-  return {-x, -y};
-}
-Point operator-(const Point& first, const Point& second) {
-  Point result = first;
-  return result -= second;
-}
+  Point& rotate                                                                                                                                       (
+const Point&, double                                                                                                                                  );
 
-Point& Point::operator*=(double coefficient) {
-  x *= coefficient;
-  y *= coefficient;
-  return *this;
-}
 
-Point operator*(const Point& first, double coefficient) {
-  Point result = first;
-  return result *= coefficient;
-}
+  Point& reflect                                                                                                                                      (
+const Point&                                                                                                                                          );
 
-Point& Point::operator/=(double coefficient) {
-  return *this *= (1 / coefficient);
-}
-Point operator/(const Point& first, double coefficient) {
-  Point result = first;
-  return result /= coefficient;
-}
-Point& Point::rotate(const Point& center_of_rotate, double angle) {
-  double new_x, new_y;
-  new_x = (x - center_of_rotate.x) * cos(angle)
-      - (y - center_of_rotate.y) * sin(angle);
-  new_y = (x - center_of_rotate.x) * sin(angle)
-      + (y - center_of_rotate.y) * cos(angle);
-  *this = Point(new_x, new_y) + center_of_rotate;
-  return *this;
-}
 
-Point& Point::reflect(const Point& reflect_center) {
-  *this = reflect_center * 2 - *this;
-  return *this;
-}
+  Point& scale                                                                                                                                        (
+const Point&, double                                                                                                                                  );
+  double ScalarProd                                                                                                                                   (
+const Point&                                                                                                                                          )
+ const                                                                                                                                                ;
+  double VectorProd                                                                                                                                   (
+const Point&                                                                                                                                          )
+ const                                                                                                                                                ;
+                                                                                                                                                      };
 
-Point& Point::scale(const Point& center_of_scale, double coefficient) {
-  *this = (*this - center_of_scale) * coefficient + center_of_scale;
-  return *this;
-}
 
-double Point::ScalarProd(const Point& second_point) const {
-  return x * second_point.x + y * second_point.y;
-}
+Point::Point                                                                                                                                          ()
+ : x                                                                                                                                                  (
+0                                                                                                                                                     )
+, y                                                                                                                                                   (
+0                                                                                                                                                     )
+                                                                                                                                                      {
+                                                                                                                                                      }
 
-double Point::VectorProd(const Point& second_point) const {
-  return x * second_point.y - y * second_point.x;
-}
-class Line {
+
+Point::Point                                                                                                                                          (
+const double& x, const double& y                                                                                                                      )
+ : x                                                                                                                                                  (
+x                                                                                                                                                     )
+, y                                                                                                                                                   (
+y                                                                                                                                                     )
+                                                                                                                                                      {
+                                                                                                                                                      }
+
+
+bool Point::operator==                                                                                                                                (
+const Point& second                                                                                                                                   )
+ const                                                                                                                                                {
+  return IsSame                                                                                                                                       (
+x, second.x                                                                                                                                           )
+ && IsSame                                                                                                                                            (
+y, second.y                                                                                                                                           );
+                                                                                                                                                      }
+
+
+bool Point::operator!=                                                                                                                                (
+const Point& second                                                                                                                                   )
+ const                                                                                                                                                {
+  return !                                                                                                                                            (
+*this == second                                                                                                                                       );
+                                                                                                                                                      }
+
+
+Point& Point::operator+=                                                                                                                              (
+const Point& second                                                                                                                                   )
+                                                                                                                                                      {
+  x += second.x                                                                                                                                       ;
+  y += second.y                                                                                                                                       ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point operator+                                                                                                                                       (
+const Point& first, const Point& second                                                                                                               )
+                                                                                                                                                      {
+  Point result = first                                                                                                                                ;
+  return result += second                                                                                                                             ;
+                                                                                                                                                      }
+
+
+Point& Point::operator-=                                                                                                                              (
+const Point& second                                                                                                                                   )
+                                                                                                                                                      {
+  x -= second.x                                                                                                                                       ;
+  y -= second.y                                                                                                                                       ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point Point::operator-                                                                                                                                ()
+ const                                                                                                                                                {
+  return                                                                                                                                              {
+-x, -y                                                                                                                                                };
+                                                                                                                                                      }
+Point operator-                                                                                                                                       (
+const Point& first, const Point& second                                                                                                               )
+                                                                                                                                                      {
+  Point result = first                                                                                                                                ;
+  return result -= second                                                                                                                             ;
+                                                                                                                                                      }
+
+
+Point& Point::operator*=                                                                                                                              (
+double coefficient                                                                                                                                    )
+                                                                                                                                                      {
+  x *= coefficient                                                                                                                                    ;
+  y *= coefficient                                                                                                                                    ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point operator*                                                                                                                                       (
+const Point& first, double coefficient                                                                                                                )
+                                                                                                                                                      {
+  Point result = first                                                                                                                                ;
+  return result *= coefficient                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point& Point::operator/=                                                                                                                              (
+double coefficient                                                                                                                                    )
+                                                                                                                                                      {
+  return *this *=                                                                                                                                     (
+1 / coefficient                                                                                                                                       );
+                                                                                                                                                      }
+Point operator/                                                                                                                                       (
+const Point& first, double coefficient                                                                                                                )
+                                                                                                                                                      {
+  Point result = first                                                                                                                                ;
+  return result /= coefficient                                                                                                                        ;
+                                                                                                                                                      }
+Point& Point::rotate                                                                                                                                  (
+const Point& center_of_rotate, double angle                                                                                                           )
+                                                                                                                                                      {
+  double new_x, new_y                                                                                                                                 ;
+  new_x =                                                                                                                                             (
+x - center_of_rotate.x                                                                                                                                )
+ * cos                                                                                                                                                (
+angle                                                                                                                                                 )
+      -                                                                                                                                               (
+y - center_of_rotate.y                                                                                                                                )
+ * sin                                                                                                                                                (
+angle                                                                                                                                                 );
+  new_y =                                                                                                                                             (
+x - center_of_rotate.x                                                                                                                                )
+ * sin                                                                                                                                                (
+angle                                                                                                                                                 )
+      +                                                                                                                                               (
+y - center_of_rotate.y                                                                                                                                )
+ * cos                                                                                                                                                (
+angle                                                                                                                                                 );
+  *this = Point                                                                                                                                       (
+new_x, new_y                                                                                                                                          )
+ + center_of_rotate                                                                                                                                   ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point& Point::reflect                                                                                                                                 (
+const Point& reflect_center                                                                                                                           )
+                                                                                                                                                      {
+  *this = reflect_center * 2 - *this                                                                                                                  ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point& Point::scale                                                                                                                                   (
+const Point& center_of_scale, double coefficient                                                                                                      )
+                                                                                                                                                      {
+  *this =                                                                                                                                             (
+*this - center_of_scale                                                                                                                               )
+ * coefficient + center_of_scale                                                                                                                      ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+double Point::ScalarProd                                                                                                                              (
+const Point& second_point                                                                                                                             )
+ const                                                                                                                                                {
+  return x * second_point.x + y * second_point.y                                                                                                      ;
+                                                                                                                                                      }
+
+
+double Point::VectorProd                                                                                                                              (
+const Point& second_point                                                                                                                             )
+ const                                                                                                                                                {
+  return x * second_point.y - y * second_point.x                                                                                                      ;
+                                                                                                                                                      }
+class Line                                                                                                                                            {
  public:
 
-  Line();
 
-  Line(const Point&, const Point&);
+  Line                                                                                                                                                ();
 
-  Line(const double&, const double&);
 
-  Line(const Point&, const double&);
+  Line                                                                                                                                                (
+const Point&, const Point&                                                                                                                            );
 
-  Line(const Point&);
 
-  bool operator==(const Line&) const;
+  Line                                                                                                                                                (
+const double&, const double&                                                                                                                          );
 
-  bool operator!=(const Line&) const;
-  Point Intersection(const Line&) const;
 
-  Point Height(const Point&) const;
+  Line                                                                                                                                                (
+const Point&, const double&                                                                                                                           );
 
-  Point& reflect_point(Point&) const;
-  Line& rotate(const Point&, double);
-  bool IsParallel(const Line&) const;
+
+  Line                                                                                                                                                (
+const Point&                                                                                                                                          );
+
+
+  bool operator==                                                                                                                                     (
+const Line&                                                                                                                                           )
+ const                                                                                                                                                ;
+
+
+  bool operator!=                                                                                                                                     (
+const Line&                                                                                                                                           )
+ const                                                                                                                                                ;
+  Point Intersection                                                                                                                                  (
+const Line&                                                                                                                                           )
+ const                                                                                                                                                ;
+
+
+  Point Height                                                                                                                                        (
+const Point&                                                                                                                                          )
+ const                                                                                                                                                ;
+
+
+  Point& reflect_point                                                                                                                                (
+Point&                                                                                                                                                )
+ const                                                                                                                                                ;
+  Line& rotate                                                                                                                                        (
+const Point&, double                                                                                                                                  );
+  bool IsParallel                                                                                                                                     (
+const Line&                                                                                                                                           )
+ const                                                                                                                                                ;
  protected:
 
 
-  double A, B, C;
-};
 
-Line::Line() : A(0), B(0), C(0) {
-}
 
-Line::Line(const Point& first_point, const Point& second_point) :
-    A(second_point.y - first_point.y),
-    B(first_point.x - second_point.x),
-    C(second_point.x * first_point.y - first_point.x * second_point.y) {
-}
+  double A, B, C                                                                                                                                      ;
+                                                                                                                                                      };
 
-Line::Line(const double& slope, const double& shift)
-    : A(slope), B(-1), C(shift) {
-}
 
-Line::Line(const Point& point, const double& slope)
-    : A(slope), B(-1), C(point.y - slope * point.x) {
-}
+Line::Line                                                                                                                                            ()
+ : A                                                                                                                                                  (
+0                                                                                                                                                     )
+, B                                                                                                                                                   (
+0                                                                                                                                                     )
+, C                                                                                                                                                   (
+0                                                                                                                                                     )
+                                                                                                                                                      {
+                                                                                                                                                      }
 
-Line::Line(const Point& point) : A(1), B(0), C(-A * point.x) {
-}
 
-bool Line::operator==(const Line& second) const {
-  return IsSame(A * second.B, second.A * B) && IsSame(B * second.C, C * second.B);
-}
+Line::Line                                                                                                                                            (
+const Point& first_point, const Point& second_point                                                                                                   )
+ :
+    A                                                                                                                                                 (
+second_point.y - first_point.y                                                                                                                        )
+,
+    B                                                                                                                                                 (
+first_point.x - second_point.x                                                                                                                        )
+,
+    C                                                                                                                                                 (
+second_point.x * first_point.y - first_point.x * second_point.y                                                                                       )
+                                                                                                                                                      {
+                                                                                                                                                      }
 
-bool Line::operator!=(const Line& second) const {
-  return !(*this == second);
-}
 
-Line& Line::rotate(const Point& rotate_center, double angle) {
-  Point first_point, second_point;
-  if (std::abs(A - 0) <= 1e-8) {
-    first_point = {1, -C / B};
-    second_point = {-1, -C / B};
-  } else {
-    first_point = {-C / A, 0};
-    second_point = {(-C - B) / A, 1};
-  }
-  first_point.rotate(rotate_center, angle);
-  second_point.rotate(rotate_center, angle);
-  *this = Line(first_point, second_point);
-  return *this;
-}
+Line::Line                                                                                                                                            (
+const double& slope, const double& shift                                                                                                              )
+    : A                                                                                                                                               (
+slope                                                                                                                                                 )
+, B                                                                                                                                                   (
+-1                                                                                                                                                    )
+, C                                                                                                                                                   (
+shift                                                                                                                                                 )
+                                                                                                                                                      {
+                                                                                                                                                      }
 
-Point Line::Intersection(const Line& second_line) const {
-  Point answer;
-  answer.y = (A * second_line.C - C * second_line.A) / (B * second_line.A - A * second_line.B);
-  answer.x = -(B * second_line.C - C * second_line.B) / (B * second_line.A - A * second_line.B);
-  return answer;
-}
-Point Line::Height(const Point& point) const {
-  Line second_line;
-  if (std::abs(A - 0) < 1e-8) {
-    second_line = point;
-  } else {
-    second_line = {point, B / A};
-  }
-  return Intersection(second_line);
-}
 
-Point& Line::reflect_point(Point& point) const {
-  point = Height(point) * 2 - point;
-  return point;
-}
+Line::Line                                                                                                                                            (
+const Point& point, const double& slope                                                                                                               )
+    : A                                                                                                                                               (
+slope                                                                                                                                                 )
+, B                                                                                                                                                   (
+-1                                                                                                                                                    )
+, C                                                                                                                                                   (
+point.y - slope * point.x                                                                                                                             )
+                                                                                                                                                      {
+                                                                                                                                                      }
 
-bool Line::IsParallel(const Line& second) const {
-  return IsSame(A * second.B - B * second.A, 0);
-}
-class Polygon;
-class Ellipse;
-class Shape {
+
+Line::Line                                                                                                                                            (
+const Point& point                                                                                                                                    )
+ : A                                                                                                                                                  (
+1                                                                                                                                                     )
+, B                                                                                                                                                   (
+0                                                                                                                                                     )
+, C                                                                                                                                                   (
+-A * point.x                                                                                                                                          )
+                                                                                                                                                      {
+                                                                                                                                                      }
+
+
+bool Line::operator==                                                                                                                                 (
+const Line& second                                                                                                                                    )
+ const                                                                                                                                                {
+  return IsSame                                                                                                                                       (
+A * second.B, second.A * B                                                                                                                            )
+ && IsSame                                                                                                                                            (
+B * second.C, C * second.B                                                                                                                            );
+                                                                                                                                                      }
+
+
+bool Line::operator!=                                                                                                                                 (
+const Line& second                                                                                                                                    )
+ const                                                                                                                                                {
+  return !                                                                                                                                            (
+*this == second                                                                                                                                       );
+                                                                                                                                                      }
+
+
+Line& Line::rotate                                                                                                                                    (
+const Point& rotate_center, double angle                                                                                                              )
+                                                                                                                                                      {
+  Point first_point, second_point                                                                                                                     ;
+  if                                                                                                                                                  (
+std::abs                                                                                                                                              (
+A - 0                                                                                                                                                 )
+ <= 1e-8                                                                                                                                              )
+                                                                                                                                                      {
+    first_point =                                                                                                                                     {
+1, -C / B                                                                                                                                             };
+    second_point =                                                                                                                                    {
+-1, -C / B                                                                                                                                            };
+                                                                                                                                                      }
+ else                                                                                                                                                 {
+    first_point =                                                                                                                                     {
+-C / A, 0                                                                                                                                             };
+    second_point =                                                                                                                                    {(
+-C - B                                                                                                                                                )
+ / A, 1                                                                                                                                               };
+                                                                                                                                                      }
+  first_point.rotate                                                                                                                                  (
+rotate_center, angle                                                                                                                                  );
+  second_point.rotate                                                                                                                                 (
+rotate_center, angle                                                                                                                                  );
+  *this = Line                                                                                                                                        (
+first_point, second_point                                                                                                                             );
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Point Line::Intersection                                                                                                                              (
+const Line& second_line                                                                                                                               )
+ const                                                                                                                                                {
+  Point answer                                                                                                                                        ;
+  answer.y =                                                                                                                                          (
+A * second_line.C - C * second_line.A                                                                                                                 )
+ /                                                                                                                                                    (
+B * second_line.A - A * second_line.B                                                                                                                 );
+  answer.x = -                                                                                                                                        (
+B * second_line.C - C * second_line.B                                                                                                                 )
+ /                                                                                                                                                    (
+B * second_line.A - A * second_line.B                                                                                                                 );
+  return answer                                                                                                                                       ;
+                                                                                                                                                      }
+Point Line::Height                                                                                                                                    (
+const Point& point                                                                                                                                    )
+ const                                                                                                                                                {
+  Line second_line                                                                                                                                    ;
+  if                                                                                                                                                  (
+std::abs                                                                                                                                              (
+A - 0                                                                                                                                                 )
+ < 1e-8                                                                                                                                               )
+                                                                                                                                                      {
+    second_line = point                                                                                                                               ;
+                                                                                                                                                      }
+ else                                                                                                                                                 {
+    second_line =                                                                                                                                     {
+point, B / A                                                                                                                                          };
+                                                                                                                                                      }
+  return Intersection                                                                                                                                 (
+second_line                                                                                                                                           );
+                                                                                                                                                      }
+
+
+Point& Line::reflect_point                                                                                                                            (
+Point& point                                                                                                                                          )
+ const                                                                                                                                                {
+  point = Height                                                                                                                                      (
+point                                                                                                                                                 )
+ * 2 - point                                                                                                                                          ;
+  return point                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+bool Line::IsParallel                                                                                                                                 (
+const Line& second                                                                                                                                    )
+ const                                                                                                                                                {
+  return IsSame                                                                                                                                       (
+A * second.B - B * second.A, 0                                                                                                                        );
+                                                                                                                                                      }
+class Polygon                                                                                                                                         ;
+class Ellipse                                                                                                                                         ;
+class Shape                                                                                                                                           {
  public:
-  virtual double area() const = 0;
+  virtual double area                                                                                                                                 ()
+ const = 0                                                                                                                                            ;
 
-  virtual double perimeter() const = 0;
 
-  virtual Shape& rotate(const Point&, double) = 0;
+  virtual double perimeter                                                                                                                            ()
+ const = 0                                                                                                                                            ;
 
-  virtual Shape& reflect(const Point&) = 0;
 
-  virtual Shape& reflect(const Line&) = 0;
+  virtual Shape& rotate                                                                                                                               (
+const Point&, double                                                                                                                                  )
+ = 0                                                                                                                                                  ;
 
-  virtual Shape& scale(const Point&, double) = 0;
-  bool operator==(const Shape&) const;
-  bool operator!=(const Shape&) const;
-  virtual bool isCongruentTo(const Shape&) const = 0;
-  virtual bool isSimilarTo(const Shape&) const = 0;
-  virtual bool containsPoint(const Point&) const = 0;
-  virtual ~Shape() = default;
-};
 
-class Polygon : public Shape {
+  virtual Shape& reflect                                                                                                                              (
+const Point&                                                                                                                                          )
+ = 0                                                                                                                                                  ;
+
+
+  virtual Shape& reflect                                                                                                                              (
+const Line&                                                                                                                                           )
+ = 0                                                                                                                                                  ;
+
+
+  virtual Shape& scale                                                                                                                                (
+const Point&, double                                                                                                                                  )
+ = 0                                                                                                                                                  ;
+  bool operator==                                                                                                                                     (
+const Shape&                                                                                                                                          )
+ const                                                                                                                                                ;
+  bool operator!=                                                                                                                                     (
+const Shape&                                                                                                                                          )
+ const                                                                                                                                                ;
+  virtual bool isCongruentTo                                                                                                                          (
+const Shape&                                                                                                                                          )
+ const = 0                                                                                                                                            ;
+  virtual bool isSimilarTo                                                                                                                            (
+const Shape&                                                                                                                                          )
+ const = 0                                                                                                                                            ;
+  virtual bool containsPoint                                                                                                                          (
+const Point&                                                                                                                                          )
+ const = 0                                                                                                                                            ;
+  virtual ~Shape                                                                                                                                      ()
+ = default                                                                                                                                            ;
+                                                                                                                                                      };
+
+
+class Polygon : public Shape                                                                                                                          {
  public:
-  friend int main();
-  Polygon() = default;
+  friend int main                                                                                                                                     ();
+  Polygon                                                                                                                                             ()
+ = default                                                                                                                                            ;
 
-  Polygon(const std::vector<Point>&);
+
+  Polygon                                                                                                                                             (
+const std::vector<Point>&                                                                                                                             );
+
 
   template<class... Args>
-  Polygon(const Point& p, Args... args);
+  Polygon                                                                                                                                             (
+const Point& p, Args... args                                                                                                                          );
 
-  size_t verticesCount() const;
 
-  const std::vector<Point>& getVertices() const;
+  size_t verticesCount                                                                                                                                ()
+ const                                                                                                                                                ;
 
-  bool isConvex() const;
 
-  Polygon& rotate(const Point&, double) override;
+  const std::vector<Point>& getVertices                                                                                                               ()
+ const                                                                                                                                                ;
 
-  Polygon& reflect(const Point&) override;
 
-  Polygon& reflect(const Line&) override;
+  bool isConvex                                                                                                                                       ()
+ const                                                                                                                                                ;
 
-  Polygon& scale(const Point&, double) override;
 
-  double perimeter() const override;
+  Polygon& rotate                                                                                                                                     (
+const Point&, double                                                                                                                                  )
+ override                                                                                                                                             ;
 
-  double area() const override;
-  bool isCongruentTo(const Shape&) const override;
-  bool isSimilarTo(const Shape&) const override;
-  bool containsPoint(const Point&) const override;
+
+  Polygon& reflect                                                                                                                                    (
+const Point&                                                                                                                                          )
+ override                                                                                                                                             ;
+
+
+  Polygon& reflect                                                                                                                                    (
+const Line&                                                                                                                                           )
+ override                                                                                                                                             ;
+
+
+  Polygon& scale                                                                                                                                      (
+const Point&, double                                                                                                                                  )
+ override                                                                                                                                             ;
+
+
+  double perimeter                                                                                                                                    ()
+ const override                                                                                                                                       ;
+
+
+  double area                                                                                                                                         ()
+ const override                                                                                                                                       ;
+  bool isCongruentTo                                                                                                                                  (
+const Shape&                                                                                                                                          )
+ const override                                                                                                                                       ;
+  bool isSimilarTo                                                                                                                                    (
+const Shape&                                                                                                                                          )
+ const override                                                                                                                                       ;
+  bool containsPoint                                                                                                                                  (
+const Point&                                                                                                                                          )
+ const override                                                                                                                                       ;
  protected:
-  std::vector<Point> vertices;
-};
+  std::vector<Point> vertices                                                                                                                         ;
+                                                                                                                                                      };
 
-size_t Polygon::verticesCount() const {
-  return vertices.size();
-}
 
-const std::vector<Point>& Polygon::getVertices() const {
-  return vertices;
-}
+size_t Polygon::verticesCount                                                                                                                         ()
+ const                                                                                                                                                {
+  return vertices.size                                                                                                                                ();
+                                                                                                                                                      }
 
-bool Polygon::isConvex() const {
-  if (vertices.size() <= 2) {
-    return false;
-  }
-  bool vertices_on_right = false;
-  Point vector1, vector2;
-  vector1 = vertices[1] - vertices[0];
-  vector2 = vertices[2] - vertices[1];
-  double delta = vector1.VectorProd(vector2);
-  if (delta < 0) {
-    vertices_on_right = true;
-  }
-  size_t size = vertices.size();
-  for (size_t i = 1; i < size; ++i) {
-    vector1 = vertices[(i + 1) % size] - vertices[i];
-    vector2 = vertices[(i + 2) % size] - vertices[(i + 1) % size];
-    delta = vector1.VectorProd(vector2);
-    if (delta < 0 == !vertices_on_right) {
-      return false;
-    }
-  }
-  return true;
-}
 
-Polygon::Polygon(const std::vector<Point>& dots) {
-  vertices = dots;
-}
+const std::vector<Point>& Polygon::getVertices                                                                                                        ()
+ const                                                                                                                                                {
+  return vertices                                                                                                                                     ;
+                                                                                                                                                      }
+
+
+bool Polygon::isConvex                                                                                                                                ()
+ const                                                                                                                                                {
+  if                                                                                                                                                  (
+vertices.size                                                                                                                                         ()
+ <= 2                                                                                                                                                 )
+                                                                                                                                                      {
+    return false                                                                                                                                      ;
+                                                                                                                                                      }
+  bool vertices_on_right = false                                                                                                                      ;
+  Point vector1, vector2                                                                                                                              ;
+  vector1 = vertices[1] - vertices[0]                                                                                                                 ;
+  vector2 = vertices[2] - vertices[1]                                                                                                                 ;
+  double delta = vector1.VectorProd                                                                                                                   (
+vector2                                                                                                                                               );
+  if                                                                                                                                                  (
+delta < 0                                                                                                                                             )
+                                                                                                                                                      {
+    vertices_on_right = true                                                                                                                          ;
+                                                                                                                                                      }
+  size_t size = vertices.size                                                                                                                         ();
+  for                                                                                                                                                 (
+size_t i = 1                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    vector1 = vertices[                                                                                                                               (
+i + 1                                                                                                                                                 )
+ % size] - vertices[i]                                                                                                                                ;
+    vector2 = vertices[                                                                                                                               (
+i + 2                                                                                                                                                 )
+ % size] - vertices[                                                                                                                                  (
+i + 1                                                                                                                                                 )
+ % size]                                                                                                                                              ;
+    delta = vector1.VectorProd                                                                                                                        (
+vector2                                                                                                                                               );
+    if                                                                                                                                                (
+delta < 0 == !vertices_on_right                                                                                                                       )
+                                                                                                                                                      {
+      return false                                                                                                                                    ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+  return true                                                                                                                                         ;
+                                                                                                                                                      }
+
+
+Polygon::Polygon                                                                                                                                      (
+const std::vector<Point>& dots                                                                                                                        )
+                                                                                                                                                      {
+  vertices = dots                                                                                                                                     ;
+                                                                                                                                                      }
+
 
 template<class... Args>
-Polygon::Polygon(const Point& p, Args... args) : Polygon(args...) {
-  vertices.push_back(p);
-}
-
-Polygon& Polygon::rotate(const Point& rotate_center, double angle) {
-  size_t size = vertices.size();
-  for (size_t i = 0; i < size; ++i) {
-    vertices[i].rotate(rotate_center, angle * M_PI / 180);
-  }
-  return *this;
-}
-
-Polygon& Polygon::reflect(const Point& reflect_center) {
-  size_t size = vertices.size();
-  for (size_t i = 0; i < size; ++i) {
-    vertices[i].reflect(reflect_center);
-  }
-  return *this;
-}
-
-Polygon& Polygon::reflect(const Line& axis) {
-  size_t size = vertices.size();
-  for (size_t i = 0; i < size; ++i) {
-    axis.reflect_point(vertices[i]);
-  }
-  return *this;
-}
-
-Polygon& Polygon::scale(const Point& center_of_scale, double coefficient) {
-  size_t size = vertices.size();
-  for (size_t i = 0; i < size; ++i) {
-    vertices[i].scale(center_of_scale, coefficient);
-  }
-  return *this;
-}
+Polygon::Polygon                                                                                                                                      (
+const Point& p, Args... args                                                                                                                          )
+ : Polygon                                                                                                                                            (
+args...                                                                                                                                               )
+                                                                                                                                                      {
+  vertices.push_back                                                                                                                                  (
+p                                                                                                                                                     );
+                                                                                                                                                      }
 
 
-bool Polygon::isCongruentTo(const Shape& second) const {
-  const Polygon* second_copy = dynamic_cast<const Polygon*>(&second);
-  if (second_copy == nullptr || verticesCount() != second_copy->verticesCount()) {
-    return false;
-  }
-  size_t size2 = second_copy->verticesCount();
-  bool is_congruent;
-  Point vector1, vector2, vector3, vector4;
-  double vector_prod1, vector_prod2;
-  for (size_t i = 0; i < size2; ++i) {
-    is_congruent = true;
-    for (size_t j = 0; j < size2; ++j) {
-      vector1 = vertices[j] - vertices[(j + size2 - 1) % size2];
-      vector2 = vertices[(j + 1) % size2] - vertices[j];
-      vector3 = second_copy->vertices[(i + j) % size2] - second_copy->vertices[(i + j + size2 - 1) % size2];
-      vector4 = second_copy->vertices[(i + j + 1) % size2] - second_copy->vertices[(i + j) % size2];
-      vector_prod1 = (vector1).VectorProd(vector2);
-      vector_prod2 = (vector3).VectorProd(vector4);
-      if (!IsSame(std::abs(vector_prod1 / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
-                  std::abs(vector_prod2 / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
-          || !IsSame(hypot(vector1.x, vector1.y), hypot(vector3.x, vector3.y))
-          || !IsSame(hypot(vector2.x, vector2.y), hypot(vector4.x, vector4.y))) {
-        is_congruent = false;
-        break;
-      }
-    }
-    if (is_congruent) {
-      return true;
-    }
-    is_congruent = true;
-    for (size_t j = 0; j < size2; ++j) {
-      vector1 = vertices[j] - vertices[(j + size2 - 1) % size2];
-      vector2 = vertices[(j + 1) % size2] - vertices[j];
-      vector3 = second_copy->vertices[(i + size2 - j) % size2] - second_copy->vertices[(i + size2 - j + 1) % size2];
-      vector4 = second_copy->vertices[(i + size2 - j - 1) % size2] - second_copy->vertices[(i + size2 - j) % size2];
-      vector_prod1 = (vector1).VectorProd(vector2);
-      vector_prod2 = (vector3).VectorProd(vector4);
-      if (!IsSame(std::abs(vector_prod1 / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
-                  std::abs(vector_prod2 / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
-          || !IsSame(hypot(vector1.x, vector1.y), hypot(vector3.x, vector3.y))
-          || !IsSame(hypot(vector2.x, vector2.y), hypot(vector4.x, vector4.y))) {
-        is_congruent = false;
-        break;
-      }
-    }
-    if (is_congruent) {
-      return true;
-    }
-  }
-  return false;
-}
+Polygon& Polygon::rotate                                                                                                                              (
+const Point& rotate_center, double angle                                                                                                              )
+                                                                                                                                                      {
+  size_t size = vertices.size                                                                                                                         ();
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    vertices[i].rotate                                                                                                                                (
+rotate_center, angle * M_PI / 180                                                                                                                     );
+                                                                                                                                                      }
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
 
-bool Polygon::isSimilarTo(const Shape& second) const {
-  const Polygon* second_copy = dynamic_cast<const Polygon*>(&second);
-  if (second_copy == nullptr || verticesCount() != second_copy->verticesCount()) {
-    return false;
-  }
-  size_t size2 = second_copy->verticesCount();
-  bool is_similar;
-  Point vector1, vector2, vector3, vector4;
-  double vector_prod1, vector_prod2;
-  for (size_t i = 0; i < size2; ++i) {
-    is_similar = true;
-    for (size_t j = 0; j < size2; ++j) {
-      vector1 = vertices[j] - vertices[(j + size2 - 1) % size2];
-      vector2 = vertices[(j + 1) % size2] - vertices[j];
-      vector3 = second_copy->vertices[(i + j) % size2] - second_copy->vertices[(i + j + size2 - 1) % size2];
-      vector4 = second_copy->vertices[(i + j + 1) % size2] - second_copy->vertices[(i + j) % size2];
-      vector_prod1 = (vector1).VectorProd(vector2);
-      vector_prod2 = (vector3).VectorProd(vector4);
-      if (!IsSame(vector_prod1 / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y))),
-                  vector_prod2 / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y))))
-          || !IsSame(hypot(vector1.x, vector1.y) / hypot(vector3.x, vector3.y),
-                     hypot(vector2.x, vector2.y / hypot(vector4.x, vector4.y)))) {
-        is_similar = false;
-        break;
-      }
-    }
-    if (is_similar) {
-      return true;
-    }
-    is_similar = true;
-    for (size_t j = 0; j < size2; ++j) {
-      vector1 = vertices[j] - vertices[(j + size2 - 1) % size2];
-      vector2 = vertices[(j + 1) % size2] - vertices[j];
-      vector3 = second_copy->vertices[(i + size2 - j) % size2] - second_copy->vertices[(i + size2 - j + 1) % size2];
-      vector4 = second_copy->vertices[(i + size2 - j - 1) % size2] - second_copy->vertices[(i + size2 - j) % size2];
-      vector_prod1 = (vector1).VectorProd(vector2);
-      vector_prod2 = (vector3).VectorProd(vector4);
-      if (!IsSame(vector_prod1 / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y))),
-                  vector_prod2 / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y))))
-          || !IsSame(hypot(vector1.x, vector1.y) / hypot(vector3.x, vector3.y),
-                     (hypot(vector2.x, vector2.y) / hypot(vector4.x, vector4.y)))) {
-        is_similar = false;
-        break;
-      }
-    }
-    if (is_similar) {
-      return true;
-    }
-  }
-  return false;
-}
 
-bool Polygon::containsPoint(const Point& point) const {
-  size_t size = verticesCount();
-  size_t sides_index = 0;
-  while (Line(vertices[sides_index], vertices[(sides_index + 1) % size]) == Line(vertices[sides_index], point)) {
-    ++sides_index;
-  }
-  Point point_on_side = (vertices[sides_index] + vertices[(sides_index + 1) % size]) / 2;
-  Line line_through_point = {point, point_on_side};
-  Line side;
-  Point intersection;
-  bool line_goes_through_vertex;
-  while (true) {
-    line_goes_through_vertex = false;
-    for (size_t i = 0; i < size; ++i) {
-      side = {vertices[i], vertices[(i + 1) % size]};
-      if (!side.IsParallel(line_through_point)) {
-        intersection = side.Intersection(line_through_point);
-        if (intersection == vertices[i] || intersection == vertices[i + 1]) {
-          line_goes_through_vertex = true;
-          break;
-        }
-      }
-    }
-    if (line_goes_through_vertex) {
-      point_on_side = (vertices[sides_index] + point_on_side) / 2;
-      line_through_point = {point, point_on_side};
-    } else {
-      break;
-    }
-  }
-  int counter = 0;
-  for(size_t i = 0; i < size; ++i) {
-    side = {vertices[i], vertices[(i + 1) % size]};
-    if (!side.IsParallel(line_through_point)) {
-      intersection = side.Intersection(line_through_point);
-      if ((intersection - vertices[i]).ScalarProd(intersection - vertices[(i + 1) % size]) < 0 && (intersection - point).ScalarProd(point_on_side - point) >= 0) {
-        ++counter;
-      }
-    }
-  }
-  return counter % 2 == 1;
-}
-double Polygon::perimeter() const {
-  double answer = 0;
-  size_t size = vertices.size();
-  for (size_t i = 0; i < size - 1; ++i) {
-    answer += std::hypot(vertices[i + 1].x - vertices[i].x,
-                         vertices[i + 1].y - vertices[i].y);
-  }
-  if (size > 2) {
-    answer += std::hypot(vertices[0].x - vertices[size - 1].x,
-                         vertices[0].y - vertices[size - 1].y);
-  }
-  return answer;
-}
+Polygon& Polygon::reflect                                                                                                                             (
+const Point& reflect_center                                                                                                                           )
+                                                                                                                                                      {
+  size_t size = vertices.size                                                                                                                         ();
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    vertices[i].reflect                                                                                                                               (
+reflect_center                                                                                                                                        );
+                                                                                                                                                      }
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
 
-double Polygon::area() const {
-  double answer = 0;
-  size_t size = vertices.size();
-  Point vector1, vector2;
-  for (size_t i = 0; i < size - 2; ++i) {
-    vector1 = vertices[i + 1] - vertices[0];
-    vector2 = vertices[i + 2] - vertices[0];
-    answer += (vector1.x * vector2.y - vector1.y * vector2.x) / 2;
-  }
-  return std::abs(answer);
-}
 
-class Ellipse : public Shape {
+Polygon& Polygon::reflect                                                                                                                             (
+const Line& axis                                                                                                                                      )
+                                                                                                                                                      {
+  size_t size = vertices.size                                                                                                                         ();
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    axis.reflect_point                                                                                                                                (
+vertices[i]                                                                                                                                           );
+                                                                                                                                                      }
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Polygon& Polygon::scale                                                                                                                               (
+const Point& center_of_scale, double coefficient                                                                                                      )
+                                                                                                                                                      {
+  size_t size = vertices.size                                                                                                                         ();
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    vertices[i].scale                                                                                                                                 (
+center_of_scale, coefficient                                                                                                                          );
+                                                                                                                                                      }
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+
+
+bool Polygon::isCongruentTo                                                                                                                           (
+const Shape& second                                                                                                                                   )
+ const                                                                                                                                                {
+  const Polygon* second_copy = dynamic_cast<const Polygon*>                                                                                           (
+&second                                                                                                                                               );
+  if                                                                                                                                                  (
+second_copy == nullptr || verticesCount                                                                                                               ()
+ != second_copy->verticesCount                                                                                                                        ())
+                                                                                                                                                      {
+    return false                                                                                                                                      ;
+                                                                                                                                                      }
+  size_t size2 = second_copy->verticesCount                                                                                                           ();
+  bool is_congruent                                                                                                                                   ;
+  Point vector1, vector2, vector3, vector4                                                                                                            ;
+  double vector_prod1, vector_prod2                                                                                                                   ;
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size2                                                                                                                                            ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    is_congruent = true                                                                                                                               ;
+    for                                                                                                                                               (
+size_t j = 0                                                                                                                                          ;
+ j < size2                                                                                                                                            ;
+ ++j                                                                                                                                                  )
+                                                                                                                                                      {
+      vector1 = vertices[j] - vertices[                                                                                                               (
+j + size2 - 1                                                                                                                                         )
+ % size2]                                                                                                                                             ;
+      vector2 = vertices[                                                                                                                             (
+j + 1                                                                                                                                                 )
+ % size2] - vertices[j]                                                                                                                               ;
+      vector3 = second_copy->vertices[                                                                                                                (
+i + j                                                                                                                                                 )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + j + size2 - 1                                                                                                                                     )
+ % size2]                                                                                                                                             ;
+      vector4 = second_copy->vertices[                                                                                                                (
+i + j + 1                                                                                                                                             )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + j                                                                                                                                                 )
+ % size2]                                                                                                                                             ;
+      vector_prod1 =                                                                                                                                  (
+vector1                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector2                                                                                                                                               );
+      vector_prod2 =                                                                                                                                  (
+vector3                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector4                                                                                                                                               );
+      if                                                                                                                                              (
+!IsSame                                                                                                                                               (
+std::abs                                                                                                                                              (
+vector_prod1 /                                                                                                                                        ((
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  ))))
+,
+                  std::abs                                                                                                                            (
+vector_prod2 /                                                                                                                                        ((
+hypot                                                                                                                                                 (
+vector3.x, vector3.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector4.x, vector4.y                                                                                                                                  )))))
+          || !IsSame                                                                                                                                  (
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+, hypot                                                                                                                                               (
+vector3.x, vector3.y                                                                                                                                  ))
+          || !IsSame                                                                                                                                  (
+hypot                                                                                                                                                 (
+vector2.x, vector2.y                                                                                                                                  )
+, hypot                                                                                                                                               (
+vector4.x, vector4.y                                                                                                                                  )))
+                                                                                                                                                      {
+        is_congruent = false                                                                                                                          ;
+        break                                                                                                                                         ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+    if                                                                                                                                                (
+is_congruent                                                                                                                                          )
+                                                                                                                                                      {
+      return true                                                                                                                                     ;
+                                                                                                                                                      }
+    is_congruent = true                                                                                                                               ;
+    for                                                                                                                                               (
+size_t j = 0                                                                                                                                          ;
+ j < size2                                                                                                                                            ;
+ ++j                                                                                                                                                  )
+                                                                                                                                                      {
+      vector1 = vertices[j] - vertices[                                                                                                               (
+j + size2 - 1                                                                                                                                         )
+ % size2]                                                                                                                                             ;
+      vector2 = vertices[                                                                                                                             (
+j + 1                                                                                                                                                 )
+ % size2] - vertices[j]                                                                                                                               ;
+      vector3 = second_copy->vertices[                                                                                                                (
+i + size2 - j                                                                                                                                         )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + size2 - j + 1                                                                                                                                     )
+ % size2]                                                                                                                                             ;
+      vector4 = second_copy->vertices[                                                                                                                (
+i + size2 - j - 1                                                                                                                                     )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + size2 - j                                                                                                                                         )
+ % size2]                                                                                                                                             ;
+      vector_prod1 =                                                                                                                                  (
+vector1                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector2                                                                                                                                               );
+      vector_prod2 =                                                                                                                                  (
+vector3                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector4                                                                                                                                               );
+      if                                                                                                                                              (
+!IsSame                                                                                                                                               (
+std::abs                                                                                                                                              (
+vector_prod1 /                                                                                                                                        ((
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  ))))
+,
+                  std::abs                                                                                                                            (
+vector_prod2 /                                                                                                                                        ((
+hypot                                                                                                                                                 (
+vector3.x, vector3.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector4.x, vector4.y                                                                                                                                  )))))
+          || !IsSame                                                                                                                                  (
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+, hypot                                                                                                                                               (
+vector3.x, vector3.y                                                                                                                                  ))
+          || !IsSame                                                                                                                                  (
+hypot                                                                                                                                                 (
+vector2.x, vector2.y                                                                                                                                  )
+, hypot                                                                                                                                               (
+vector4.x, vector4.y                                                                                                                                  )))
+                                                                                                                                                      {
+        is_congruent = false                                                                                                                          ;
+        break                                                                                                                                         ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+    if                                                                                                                                                (
+is_congruent                                                                                                                                          )
+                                                                                                                                                      {
+      return true                                                                                                                                     ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+  return false                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+bool Polygon::isSimilarTo                                                                                                                             (
+const Shape& second                                                                                                                                   )
+ const                                                                                                                                                {
+  const Polygon* second_copy = dynamic_cast<const Polygon*>                                                                                           (
+&second                                                                                                                                               );
+  if                                                                                                                                                  (
+second_copy == nullptr || verticesCount                                                                                                               ()
+ != second_copy->verticesCount                                                                                                                        ())
+                                                                                                                                                      {
+    return false                                                                                                                                      ;
+                                                                                                                                                      }
+  size_t size2 = second_copy->verticesCount                                                                                                           ();
+  bool is_similar                                                                                                                                     ;
+  Point vector1, vector2, vector3, vector4                                                                                                            ;
+  double vector_prod1, vector_prod2                                                                                                                   ;
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size2                                                                                                                                            ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    is_similar = true                                                                                                                                 ;
+    for                                                                                                                                               (
+size_t j = 0                                                                                                                                          ;
+ j < size2                                                                                                                                            ;
+ ++j                                                                                                                                                  )
+                                                                                                                                                      {
+      vector1 = vertices[j] - vertices[                                                                                                               (
+j + size2 - 1                                                                                                                                         )
+ % size2]                                                                                                                                             ;
+      vector2 = vertices[                                                                                                                             (
+j + 1                                                                                                                                                 )
+ % size2] - vertices[j]                                                                                                                               ;
+      vector3 = second_copy->vertices[                                                                                                                (
+i + j                                                                                                                                                 )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + j + size2 - 1                                                                                                                                     )
+ % size2]                                                                                                                                             ;
+      vector4 = second_copy->vertices[                                                                                                                (
+i + j + 1                                                                                                                                             )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + j                                                                                                                                                 )
+ % size2]                                                                                                                                             ;
+      vector_prod1 =                                                                                                                                  (
+vector1                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector2                                                                                                                                               );
+      vector_prod2 =                                                                                                                                  (
+vector3                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector4                                                                                                                                               );
+      if                                                                                                                                              (
+!IsSame                                                                                                                                               (
+vector_prod1 /                                                                                                                                        ((
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  )))
+,
+                  vector_prod2 /                                                                                                                      ((
+hypot                                                                                                                                                 (
+vector3.x, vector3.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector4.x, vector4.y                                                                                                                                  ))))
+          || !IsSame                                                                                                                                  (
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ / hypot                                                                                                                                              (
+vector3.x, vector3.y                                                                                                                                  )
+,
+                     hypot                                                                                                                            (
+vector2.x, vector2.y / hypot                                                                                                                          (
+vector4.x, vector4.y                                                                                                                                  ))))
+                                                                                                                                                      {
+        is_similar = false                                                                                                                            ;
+        break                                                                                                                                         ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+    if                                                                                                                                                (
+is_similar                                                                                                                                            )
+                                                                                                                                                      {
+      return true                                                                                                                                     ;
+                                                                                                                                                      }
+    is_similar = true                                                                                                                                 ;
+    for                                                                                                                                               (
+size_t j = 0                                                                                                                                          ;
+ j < size2                                                                                                                                            ;
+ ++j                                                                                                                                                  )
+                                                                                                                                                      {
+      vector1 = vertices[j] - vertices[                                                                                                               (
+j + size2 - 1                                                                                                                                         )
+ % size2]                                                                                                                                             ;
+      vector2 = vertices[                                                                                                                             (
+j + 1                                                                                                                                                 )
+ % size2] - vertices[j]                                                                                                                               ;
+      vector3 = second_copy->vertices[                                                                                                                (
+i + size2 - j                                                                                                                                         )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + size2 - j + 1                                                                                                                                     )
+ % size2]                                                                                                                                             ;
+      vector4 = second_copy->vertices[                                                                                                                (
+i + size2 - j - 1                                                                                                                                     )
+ % size2] - second_copy->vertices[                                                                                                                    (
+i + size2 - j                                                                                                                                         )
+ % size2]                                                                                                                                             ;
+      vector_prod1 =                                                                                                                                  (
+vector1                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector2                                                                                                                                               );
+      vector_prod2 =                                                                                                                                  (
+vector3                                                                                                                                               )
+.VectorProd                                                                                                                                           (
+vector4                                                                                                                                               );
+      if                                                                                                                                              (
+!IsSame                                                                                                                                               (
+vector_prod1 /                                                                                                                                        ((
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  )))
+,
+                  vector_prod2 /                                                                                                                      ((
+hypot                                                                                                                                                 (
+vector3.x, vector3.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector4.x, vector4.y                                                                                                                                  ))))
+          || !IsSame                                                                                                                                  (
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ / hypot                                                                                                                                              (
+vector3.x, vector3.y                                                                                                                                  )
+,
+                                                                                                                                                      (
+hypot                                                                                                                                                 (
+vector2.x, vector2.y                                                                                                                                  )
+ / hypot                                                                                                                                              (
+vector4.x, vector4.y                                                                                                                                  ))))
+                                                                                                                                                      {
+        is_similar = false                                                                                                                            ;
+        break                                                                                                                                         ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+    if                                                                                                                                                (
+is_similar                                                                                                                                            )
+                                                                                                                                                      {
+      return true                                                                                                                                     ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+  return false                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+bool Polygon::containsPoint                                                                                                                           (
+const Point& point                                                                                                                                    )
+ const                                                                                                                                                {
+  size_t size = verticesCount                                                                                                                         ();
+  size_t sides_index = 0                                                                                                                              ;
+  while                                                                                                                                               (
+Line                                                                                                                                                  (
+vertices[sides_index], vertices[                                                                                                                      (
+sides_index + 1                                                                                                                                       )
+ % size]                                                                                                                                              )
+ == Line                                                                                                                                              (
+vertices[sides_index], point                                                                                                                          ))
+                                                                                                                                                      {
+    ++sides_index                                                                                                                                     ;
+                                                                                                                                                      }
+  Point point_on_side =                                                                                                                               (
+vertices[sides_index] + vertices[                                                                                                                     (
+sides_index + 1                                                                                                                                       )
+ % size]                                                                                                                                              )
+ / 2                                                                                                                                                  ;
+  Line line_through_point =                                                                                                                           {
+point, point_on_side                                                                                                                                  };
+  Line side                                                                                                                                           ;
+  Point intersection                                                                                                                                  ;
+  bool line_goes_through_vertex                                                                                                                       ;
+  while                                                                                                                                               (
+true                                                                                                                                                  )
+                                                                                                                                                      {
+    line_goes_through_vertex = false                                                                                                                  ;
+    for                                                                                                                                               (
+size_t i = 0                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+      side =                                                                                                                                          {
+vertices[i], vertices[                                                                                                                                (
+i + 1                                                                                                                                                 )
+ % size]                                                                                                                                              };
+      if                                                                                                                                              (
+!side.IsParallel                                                                                                                                      (
+line_through_point                                                                                                                                    ))
+                                                                                                                                                      {
+        intersection = side.Intersection                                                                                                              (
+line_through_point                                                                                                                                    );
+        if                                                                                                                                            (
+intersection == vertices[i] || intersection == vertices[i + 1]                                                                                        )
+                                                                                                                                                      {
+          line_goes_through_vertex = true                                                                                                             ;
+          break                                                                                                                                       ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+                                                                                                                                                      }
+    if                                                                                                                                                (
+line_goes_through_vertex                                                                                                                              )
+                                                                                                                                                      {
+      point_on_side =                                                                                                                                 (
+vertices[sides_index] + point_on_side                                                                                                                 )
+ / 2                                                                                                                                                  ;
+      line_through_point =                                                                                                                            {
+point, point_on_side                                                                                                                                  };
+                                                                                                                                                      }
+ else                                                                                                                                                 {
+      break                                                                                                                                           ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+  int counter = 0                                                                                                                                     ;
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size                                                                                                                                             ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    side =                                                                                                                                            {
+vertices[i], vertices[                                                                                                                                (
+i + 1                                                                                                                                                 )
+ % size]                                                                                                                                              };
+    if                                                                                                                                                (
+!side.IsParallel                                                                                                                                      (
+line_through_point                                                                                                                                    ))
+                                                                                                                                                      {
+      intersection = side.Intersection                                                                                                                (
+line_through_point                                                                                                                                    );
+      if                                                                                                                                              ((
+intersection - vertices[i]                                                                                                                            )
+.ScalarProd                                                                                                                                           (
+intersection - vertices[                                                                                                                              (
+i + 1                                                                                                                                                 )
+ % size]                                                                                                                                              )
+ < 0 &&                                                                                                                                               (
+intersection - point                                                                                                                                  )
+.ScalarProd                                                                                                                                           (
+point_on_side - point                                                                                                                                 )
+ >= 0                                                                                                                                                 )
+                                                                                                                                                      {
+        ++counter                                                                                                                                     ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+                                                                                                                                                      }
+  return counter % 2 == 1                                                                                                                             ;
+                                                                                                                                                      }
+double Polygon::perimeter                                                                                                                             ()
+ const                                                                                                                                                {
+  double answer = 0                                                                                                                                   ;
+  size_t size = vertices.size                                                                                                                         ();
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size - 1                                                                                                                                         ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    answer += std::hypot                                                                                                                              (
+vertices[i + 1].x - vertices[i].x,
+                         vertices[i + 1].y - vertices[i].y                                                                                            );
+                                                                                                                                                      }
+  if                                                                                                                                                  (
+size > 2                                                                                                                                              )
+                                                                                                                                                      {
+    answer += std::hypot                                                                                                                              (
+vertices[0].x - vertices[size - 1].x,
+                         vertices[0].y - vertices[size - 1].y                                                                                         );
+                                                                                                                                                      }
+  return answer                                                                                                                                       ;
+                                                                                                                                                      }
+
+
+double Polygon::area                                                                                                                                  ()
+ const                                                                                                                                                {
+  double answer = 0                                                                                                                                   ;
+  size_t size = vertices.size                                                                                                                         ();
+  Point vector1, vector2                                                                                                                              ;
+  for                                                                                                                                                 (
+size_t i = 0                                                                                                                                          ;
+ i < size - 2                                                                                                                                         ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+    vector1 = vertices[i + 1] - vertices[0]                                                                                                           ;
+    vector2 = vertices[i + 2] - vertices[0]                                                                                                           ;
+    answer +=                                                                                                                                         (
+vector1.x * vector2.y - vector1.y * vector2.x                                                                                                         )
+ / 2                                                                                                                                                  ;
+                                                                                                                                                      }
+  return std::abs                                                                                                                                     (
+answer                                                                                                                                                );
+                                                                                                                                                      }
+
+
+class Ellipse : public Shape                                                                                                                          {
  public:
-  Ellipse();
+  Ellipse                                                                                                                                             ();
 
-  Ellipse(const Point&, const Point&, double);
 
-  std::pair<Point, Point> focuses() const;
-  double SemiMajorAxis() const;
-  std::pair<Line, Line> directrices() const;
+  Ellipse                                                                                                                                             (
+const Point&, const Point&, double                                                                                                                    );
 
-  double eccentricity() const;
 
-  Point center() const;
+  std::pair<Point, Point> focuses                                                                                                                     ()
+ const                                                                                                                                                ;
+  double SemiMajorAxis                                                                                                                                ()
+ const                                                                                                                                                ;
+  std::pair<Line, Line> directrices                                                                                                                   ()
+ const                                                                                                                                                ;
 
-  Ellipse& rotate(const Point&, double) override;
 
-  Ellipse& reflect(const Point&) override;
+  double eccentricity                                                                                                                                 ()
+ const                                                                                                                                                ;
 
-  Ellipse& reflect(const Line&) override;
 
-  Ellipse& scale(const Point&, double) override;
+  Point center                                                                                                                                        ()
+ const                                                                                                                                                ;
 
-  double perimeter() const override;
 
-  double area() const override;
-  bool isCongruentTo(const Shape&) const override;
-  bool isSimilarTo(const Shape&) const override;
-  bool containsPoint(const Point&) const override;
+  Ellipse& rotate                                                                                                                                     (
+const Point&, double                                                                                                                                  )
+ override                                                                                                                                             ;
+
+
+  Ellipse& reflect                                                                                                                                    (
+const Point&                                                                                                                                          )
+ override                                                                                                                                             ;
+
+
+  Ellipse& reflect                                                                                                                                    (
+const Line&                                                                                                                                           )
+ override                                                                                                                                             ;
+
+
+  Ellipse& scale                                                                                                                                      (
+const Point&, double                                                                                                                                  )
+ override                                                                                                                                             ;
+
+
+  double perimeter                                                                                                                                    ()
+ const override                                                                                                                                       ;
+
+
+  double area                                                                                                                                         ()
+ const override                                                                                                                                       ;
+  bool isCongruentTo                                                                                                                                  (
+const Shape&                                                                                                                                          )
+ const override                                                                                                                                       ;
+  bool isSimilarTo                                                                                                                                    (
+const Shape&                                                                                                                                          )
+ const override                                                                                                                                       ;
+  bool containsPoint                                                                                                                                  (
+const Point&                                                                                                                                          )
+ const override                                                                                                                                       ;
  protected:
-  Point focus1, focus2;
-  double semi_major_axis;
-};
+  Point focus1, focus2                                                                                                                                ;
+  double semi_major_axis                                                                                                                              ;
+                                                                                                                                                      };
 
-Ellipse::Ellipse() : focus1(0, 0), focus2(0, 0) ,semi_major_axis(1) {
-}
 
-Ellipse::Ellipse(const Point& focus1, const Point& focus2, double sum_len)
-    : focus1(focus1), focus2(focus2), semi_major_axis(sum_len / 2) {
-}
+Ellipse::Ellipse                                                                                                                                      ()
+ : focus1                                                                                                                                             (
+0, 0                                                                                                                                                  )
+, focus2                                                                                                                                              (
+0, 0                                                                                                                                                  )
+ ,semi_major_axis                                                                                                                                     (
+1                                                                                                                                                     )
+                                                                                                                                                      {
+                                                                                                                                                      }
 
-std::pair<Point, Point> Ellipse::focuses() const {
-  return {focus1, focus2};
-}
 
-double Ellipse::SemiMajorAxis() const{
-  return semi_major_axis;
-}
-std::pair<Line, Line> Ellipse::directrices() const {
-  if (IsSame(focus1.y, focus2.y)) {
-    std::pair<Line, Line> answer;
-    Point center((focus1.x + focus2.x) / 2, focus1.y);
-    answer.first = Point(center.x + semi_major_axis * semi_major_axis * 2
-        / (focus1.x - focus2.x), center.y);
-    answer.second = Point(center.x - semi_major_axis * semi_major_axis * 2
-        / (focus1.x - focus2.x), center.y);
-    return answer;
-  }
-  std::pair<Line, Line> answer;
-  double slope = (focus1.x - focus2.x) / (focus2.y - focus1.y);
-  Point delta = (focus1 - focus2) / 2;
-  double distance_from_focuses = hypot(delta.x, delta.y);
-  double distance_from_dirrectrices = semi_major_axis / eccentricity();
-  Point center = (focus1 + focus2) / 2;
+Ellipse::Ellipse                                                                                                                                      (
+const Point& focus1, const Point& focus2, double sum_len                                                                                              )
+    : focus1                                                                                                                                          (
+focus1                                                                                                                                                )
+, focus2                                                                                                                                              (
+focus2                                                                                                                                                )
+, semi_major_axis                                                                                                                                     (
+sum_len / 2                                                                                                                                           )
+                                                                                                                                                      {
+                                                                                                                                                      }
+
+
+std::pair<Point, Point> Ellipse::focuses                                                                                                              ()
+ const                                                                                                                                                {
+  return                                                                                                                                              {
+focus1, focus2                                                                                                                                        };
+                                                                                                                                                      }
+
+
+double Ellipse::SemiMajorAxis                                                                                                                         ()
+ const                                                                                                                                                {
+  return semi_major_axis                                                                                                                              ;
+                                                                                                                                                      }
+std::pair<Line, Line> Ellipse::directrices                                                                                                            ()
+ const                                                                                                                                                {
+  if                                                                                                                                                  (
+IsSame                                                                                                                                                (
+focus1.y, focus2.y                                                                                                                                    ))
+                                                                                                                                                      {
+    std::pair<Line, Line> answer                                                                                                                      ;
+    Point center                                                                                                                                      ((
+focus1.x + focus2.x                                                                                                                                   )
+ / 2, focus1.y                                                                                                                                        );
+    answer.first = Point                                                                                                                              (
+center.x + semi_major_axis * semi_major_axis * 2
+        /                                                                                                                                             (
+focus1.x - focus2.x                                                                                                                                   )
+, center.y                                                                                                                                            );
+    answer.second = Point                                                                                                                             (
+center.x - semi_major_axis * semi_major_axis * 2
+        /                                                                                                                                             (
+focus1.x - focus2.x                                                                                                                                   )
+, center.y                                                                                                                                            );
+    return answer                                                                                                                                     ;
+                                                                                                                                                      }
+  std::pair<Line, Line> answer                                                                                                                        ;
+  double slope =                                                                                                                                      (
+focus1.x - focus2.x                                                                                                                                   )
+ /                                                                                                                                                    (
+focus2.y - focus1.y                                                                                                                                   );
+  Point delta =                                                                                                                                       (
+focus1 - focus2                                                                                                                                       )
+ / 2                                                                                                                                                  ;
+  double distance_from_focuses = hypot                                                                                                                (
+delta.x, delta.y                                                                                                                                      );
+  double distance_from_dirrectrices = semi_major_axis / eccentricity                                                                                  ();
+  Point center =                                                                                                                                      (
+focus1 + focus2                                                                                                                                       )
+ / 2                                                                                                                                                  ;
   answer.first =
-      {center + delta * (distance_from_dirrectrices / distance_from_focuses),
-       slope};
+                                                                                                                                                      {
+center + delta *                                                                                                                                      (
+distance_from_dirrectrices / distance_from_focuses                                                                                                    )
+,
+       slope                                                                                                                                          };
   answer.second =
-      {center - delta * (distance_from_dirrectrices / distance_from_focuses),
-       slope};
-  return answer;
-}
+                                                                                                                                                      {
+center - delta *                                                                                                                                      (
+distance_from_dirrectrices / distance_from_focuses                                                                                                    )
+,
+       slope                                                                                                                                          };
+  return answer                                                                                                                                       ;
+                                                                                                                                                      }
 
-double Ellipse::eccentricity() const {
-  Point delta = (focus1 - focus2) / 2;
-  return hypot(delta.x, delta.y) / semi_major_axis;
-}
 
-Point Ellipse::center() const {
-  return (focus1 + focus2) / 2;
-}
+double Ellipse::eccentricity                                                                                                                          ()
+ const                                                                                                                                                {
+  Point delta =                                                                                                                                       (
+focus1 - focus2                                                                                                                                       )
+ / 2                                                                                                                                                  ;
+  return hypot                                                                                                                                        (
+delta.x, delta.y                                                                                                                                      )
+ / semi_major_axis                                                                                                                                    ;
+                                                                                                                                                      }
 
-Ellipse& Ellipse::rotate(const Point& center_of_rotate, double angle) {
-  focus1.rotate(center_of_rotate, angle * M_PI / 180);
-  focus2.rotate(center_of_rotate, angle * M_PI / 180);
-  return *this;
-}
 
-Ellipse& Ellipse::reflect(const Point& point) {
-  focus1.reflect(point);
-  focus2.reflect(point);
-  return *this;
-}
+Point Ellipse::center                                                                                                                                 ()
+ const                                                                                                                                                {
+  return                                                                                                                                              (
+focus1 + focus2                                                                                                                                       )
+ / 2                                                                                                                                                  ;
+                                                                                                                                                      }
 
-Ellipse& Ellipse::reflect(const Line& axis) {
-  axis.reflect_point(focus1);
-  axis.reflect_point(focus2);
-  return *this;
-}
 
-Ellipse& Ellipse::scale(const Point& center_of_scale, double coefficient) {
-  focus1.scale(center_of_scale, coefficient);
-  focus2.scale(center_of_scale, coefficient);
-  semi_major_axis *= coefficient;
-  return *this;
-}
+Ellipse& Ellipse::rotate                                                                                                                              (
+const Point& center_of_rotate, double angle                                                                                                           )
+                                                                                                                                                      {
+  focus1.rotate                                                                                                                                       (
+center_of_rotate, angle * M_PI / 180                                                                                                                  );
+  focus2.rotate                                                                                                                                       (
+center_of_rotate, angle * M_PI / 180                                                                                                                  );
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
 
-double Ellipse::perimeter() const {
-  return 4 * semi_major_axis * std::comp_ellint_2(eccentricity());
-}
 
-double Ellipse::area() const {
-  double e = eccentricity();
+Ellipse& Ellipse::reflect                                                                                                                             (
+const Point& point                                                                                                                                    )
+                                                                                                                                                      {
+  focus1.reflect                                                                                                                                      (
+point                                                                                                                                                 );
+  focus2.reflect                                                                                                                                      (
+point                                                                                                                                                 );
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Ellipse& Ellipse::reflect                                                                                                                             (
+const Line& axis                                                                                                                                      )
+                                                                                                                                                      {
+  axis.reflect_point                                                                                                                                  (
+focus1                                                                                                                                                );
+  axis.reflect_point                                                                                                                                  (
+focus2                                                                                                                                                );
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+Ellipse& Ellipse::scale                                                                                                                               (
+const Point& center_of_scale, double coefficient                                                                                                      )
+                                                                                                                                                      {
+  focus1.scale                                                                                                                                        (
+center_of_scale, coefficient                                                                                                                          );
+  focus2.scale                                                                                                                                        (
+center_of_scale, coefficient                                                                                                                          );
+  semi_major_axis *= coefficient                                                                                                                      ;
+  return *this                                                                                                                                        ;
+                                                                                                                                                      }
+
+
+double Ellipse::perimeter                                                                                                                             ()
+ const                                                                                                                                                {
+  return 4 * semi_major_axis * std::comp_ellint_2                                                                                                     (
+eccentricity                                                                                                                                          ());
+                                                                                                                                                      }
+
+
+double Ellipse::area                                                                                                                                  ()
+ const                                                                                                                                                {
+  double e = eccentricity                                                                                                                             ();
   return M_PI * semi_major_axis * semi_major_axis
-      * sqrt(1 - e * e);
-}
+      * sqrt                                                                                                                                          (
+1 - e * e                                                                                                                                             );
+                                                                                                                                                      }
 
 
-bool Ellipse::isCongruentTo(const Shape& second) const {
-  const Ellipse* second_copy = dynamic_cast<const Ellipse*>(&second);
-  if (second_copy == nullptr) {
-    return false;
-  }
-  Point delta1 = focus1 - focus2, delta2 = second_copy->focus1 - second_copy->focus2;
-  return IsSame(hypot(delta1.x, delta1.y), hypot(delta2.x, delta2.y)) && IsSame(semi_major_axis, second_copy->semi_major_axis);
-}
-bool Ellipse::isSimilarTo(const Shape& second) const {
-  const Ellipse* second_copy = dynamic_cast<const Ellipse*>(&second);
-  if (second_copy == nullptr) {
-    return false;
-  }
-  Point delta1 = focus1 - focus2, delta2 = second_copy->focus1 - second_copy->focus2;
-  if (!hypot(delta2.x, delta2.y)) {
-    return !hypot(delta1.x, delta1.y);
-  }
-  return IsSame(hypot(delta1.x, delta1.y) / hypot(delta2.x, delta2.y), semi_major_axis / second_copy->semi_major_axis);
-}
 
-bool Ellipse::containsPoint(const Point& point) const {
-  Point vector1 = point - focus1, vector2 = point - focus2;
-  return hypot(vector1.x, vector1.y) + hypot(vector2.x, vector2.y) <= 2 * semi_major_axis;
-}
-class Circle : public Ellipse {
+
+bool Ellipse::isCongruentTo                                                                                                                           (
+const Shape& second                                                                                                                                   )
+ const                                                                                                                                                {
+  const Ellipse* second_copy = dynamic_cast<const Ellipse*>                                                                                           (
+&second                                                                                                                                               );
+  if                                                                                                                                                  (
+second_copy == nullptr                                                                                                                                )
+                                                                                                                                                      {
+    return false                                                                                                                                      ;
+                                                                                                                                                      }
+  Point delta1 = focus1 - focus2, delta2 = second_copy->focus1 - second_copy->focus2                                                                  ;
+  return IsSame                                                                                                                                       (
+hypot                                                                                                                                                 (
+delta1.x, delta1.y                                                                                                                                    )
+, hypot                                                                                                                                               (
+delta2.x, delta2.y                                                                                                                                    ))
+ && IsSame                                                                                                                                            (
+semi_major_axis, second_copy->semi_major_axis                                                                                                         );
+                                                                                                                                                      }
+bool Ellipse::isSimilarTo                                                                                                                             (
+const Shape& second                                                                                                                                   )
+ const                                                                                                                                                {
+  const Ellipse* second_copy = dynamic_cast<const Ellipse*>                                                                                           (
+&second                                                                                                                                               );
+  if                                                                                                                                                  (
+second_copy == nullptr                                                                                                                                )
+                                                                                                                                                      {
+    return false                                                                                                                                      ;
+                                                                                                                                                      }
+  Point delta1 = focus1 - focus2, delta2 = second_copy->focus1 - second_copy->focus2                                                                  ;
+  if                                                                                                                                                  (
+!hypot                                                                                                                                                (
+delta2.x, delta2.y                                                                                                                                    ))
+                                                                                                                                                      {
+    return !hypot                                                                                                                                     (
+delta1.x, delta1.y                                                                                                                                    );
+                                                                                                                                                      }
+  return IsSame                                                                                                                                       (
+hypot                                                                                                                                                 (
+delta1.x, delta1.y                                                                                                                                    )
+ / hypot                                                                                                                                              (
+delta2.x, delta2.y                                                                                                                                    )
+, semi_major_axis / second_copy->semi_major_axis                                                                                                      );
+                                                                                                                                                      }
+
+
+bool Ellipse::containsPoint                                                                                                                           (
+const Point& point                                                                                                                                    )
+ const                                                                                                                                                {
+  Point vector1 = point - focus1, vector2 = point - focus2                                                                                            ;
+  return hypot                                                                                                                                        (
+vector1.x, vector1.y                                                                                                                                  )
+ + hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  )
+ <= 2 * semi_major_axis                                                                                                                               ;
+                                                                                                                                                      }
+class Circle : public Ellipse                                                                                                                         {
  public:
-  Circle() = default;
-  Circle(const Point&, double);
+  Circle                                                                                                                                              ()
+ = default                                                                                                                                            ;
+  Circle                                                                                                                                              (
+const Point&, double                                                                                                                                  );
 
-  double radius() const;
+
+  double radius                                                                                                                                       ()
+ const                                                                                                                                                ;
 
 
-  double perimeter() const override;
 
-  double area() const override;
+
+  double perimeter                                                                                                                                    ()
+ const override                                                                                                                                       ;
+
+
+  double area                                                                                                                                         ()
+ const override                                                                                                                                       ;
+
 
  protected:
 
-};
 
-Circle::Circle(const Point& center, double radius) {
-  focus1 = center;
-  focus2 = center;
-  semi_major_axis = radius;
-}
-
-double Circle::radius() const {
-  return semi_major_axis;
-}
+                                                                                                                                                      };
 
 
-double Circle::perimeter() const {
-  return 2 * M_PI * semi_major_axis;
-}
+Circle::Circle                                                                                                                                        (
+const Point& center, double radius                                                                                                                    )
+                                                                                                                                                      {
+  focus1 = center                                                                                                                                     ;
+  focus2 = center                                                                                                                                     ;
+  semi_major_axis = radius                                                                                                                            ;
+                                                                                                                                                      }
 
-double Circle::area() const {
-  return M_PI * semi_major_axis * semi_major_axis;
-}
 
-class Rectangle : public Polygon {
+double Circle::radius                                                                                                                                 ()
+ const                                                                                                                                                {
+  return semi_major_axis                                                                                                                              ;
+                                                                                                                                                      }
+
+
+
+
+double Circle::perimeter                                                                                                                              ()
+ const                                                                                                                                                {
+  return 2 * M_PI * semi_major_axis                                                                                                                   ;
+                                                                                                                                                      }
+
+
+double Circle::area                                                                                                                                   ()
+ const                                                                                                                                                {
+  return M_PI * semi_major_axis * semi_major_axis                                                                                                     ;
+                                                                                                                                                      }
+
+
+class Rectangle : public Polygon                                                                                                                      {
  public:
-  Rectangle() = default;
-
-  Rectangle(const Point&, const Point&, double);
-
-  Point center() const;
-
-  std::pair<Line, Line> diagonals() const;
-  double perimeter() const override;
-  double area() const override;
-};
+  Rectangle                                                                                                                                           ()
+ = default                                                                                                                                            ;
 
 
+  Rectangle                                                                                                                                           (
+const Point&, const Point&, double                                                                                                                    );
 
-Point Rectangle::center() const {
-  return (vertices[0] + vertices[2]) / 2;
-}
 
-std::pair<Line, Line> Rectangle::diagonals() const {
-  return {{vertices[0], vertices[2]}, {vertices[1], vertices[3]}};
-}
-Rectangle::Rectangle(const Point& first_dot, const Point& second_dot, double quotient) {
-  vertices.resize(4);
-  vertices[0] = first_dot;
-  vertices[2] = second_dot;
-  if (quotient < 1) {
-    quotient = 1 / quotient;
-  }
-  Point delta = center() - first_dot;
-  delta.rotate({0, 0}, 2 * atan(quotient));
-  vertices[1] = center() + delta;
-  vertices[3] = center() - delta;
-}
-double Rectangle::perimeter() const {
-  Point vector1 = vertices[1] - vertices[0], vector2 = vertices[2] - vertices[1];
-  return 2 * (hypot(vector1.x, vector1.y) + hypot(vector2.x, vector2.y));
-}
-double Rectangle::area() const {
-  Point vector1 = vertices[1] - vertices[0], vector2 = vertices[2] - vertices[1];
-  return hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y);
-}
-class Square : public Rectangle {
+  Point center                                                                                                                                        ()
+ const                                                                                                                                                ;
+
+
+  std::pair<Line, Line> diagonals                                                                                                                     ()
+ const                                                                                                                                                ;
+  double perimeter                                                                                                                                    ()
+ const override                                                                                                                                       ;
+  double area                                                                                                                                         ()
+ const override                                                                                                                                       ;
+                                                                                                                                                      };
+
+
+
+
+
+
+Point Rectangle::center                                                                                                                               ()
+ const                                                                                                                                                {
+  return                                                                                                                                              (
+vertices[0] + vertices[2]                                                                                                                             )
+ / 2                                                                                                                                                  ;
+                                                                                                                                                      }
+
+
+std::pair<Line, Line> Rectangle::diagonals                                                                                                            ()
+ const                                                                                                                                                {
+  return                                                                                                                                              {{
+vertices[0], vertices[2]                                                                                                                              }
+,                                                                                                                                                     {
+vertices[1], vertices[3]                                                                                                                              }};
+                                                                                                                                                      }
+Rectangle::Rectangle                                                                                                                                  (
+const Point& first_dot, const Point& second_dot, double quotient                                                                                      )
+                                                                                                                                                      {
+  vertices.resize                                                                                                                                     (
+4                                                                                                                                                     );
+  vertices[0] = first_dot                                                                                                                             ;
+  vertices[2] = second_dot                                                                                                                            ;
+  if                                                                                                                                                  (
+quotient < 1                                                                                                                                          )
+                                                                                                                                                      {
+    quotient = 1 / quotient                                                                                                                           ;
+                                                                                                                                                      }
+  Point delta = center                                                                                                                                ()
+ - first_dot                                                                                                                                          ;
+  delta.rotate                                                                                                                                        ({
+0, 0                                                                                                                                                  }
+, 2 * atan                                                                                                                                            (
+quotient                                                                                                                                              ));
+  vertices[1] = center                                                                                                                                ()
+ + delta                                                                                                                                              ;
+  vertices[3] = center                                                                                                                                ()
+ - delta                                                                                                                                              ;
+                                                                                                                                                      }
+double Rectangle::perimeter                                                                                                                           ()
+ const                                                                                                                                                {
+  Point vector1 = vertices[1] - vertices[0], vector2 = vertices[2] - vertices[1]                                                                      ;
+  return 2 *                                                                                                                                          (
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ + hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  ));
+                                                                                                                                                      }
+double Rectangle::area                                                                                                                                ()
+ const                                                                                                                                                {
+  Point vector1 = vertices[1] - vertices[0], vector2 = vertices[2] - vertices[1]                                                                      ;
+  return hypot                                                                                                                                        (
+vector1.x, vector1.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  );
+                                                                                                                                                      }
+class Square : public Rectangle                                                                                                                       {
  public:
-  Square() = default;
-  Square(const Point&, const Point&);
-  Circle circumscribedCircle();
-  Circle inscribedCircle();
+  Square                                                                                                                                              ()
+ = default                                                                                                                                            ;
+  Square                                                                                                                                              (
+const Point&, const Point&                                                                                                                            );
+  Circle circumscribedCircle                                                                                                                          ();
+  Circle inscribedCircle                                                                                                                              ();
  protected:
 
-};
 
-Circle Square::circumscribedCircle() {
-  Point diagonal = vertices[2] - vertices[0];
-  return {center(), hypot(diagonal.x, diagonal.y) / 2};
-}
-Circle Square::inscribedCircle() {
-  Point side = vertices[1] - vertices[0];
-  return {center(), hypot(side.x, side.y) / 2};
-}
-Square::Square(const Point& first_point, const Point& second_point) : Rectangle(first_point, second_point, 1){
-}
-class Triangle : public Polygon {
+                                                                                                                                                      };
+
+
+Circle Square::circumscribedCircle                                                                                                                    ()
+                                                                                                                                                      {
+  Point diagonal = vertices[2] - vertices[0]                                                                                                          ;
+  return                                                                                                                                              {
+center                                                                                                                                                ()
+, hypot                                                                                                                                               (
+diagonal.x, diagonal.y                                                                                                                                )
+ / 2                                                                                                                                                  };
+                                                                                                                                                      }
+Circle Square::inscribedCircle                                                                                                                        ()
+                                                                                                                                                      {
+  Point side = vertices[1] - vertices[0]                                                                                                              ;
+  return                                                                                                                                              {
+center                                                                                                                                                ()
+, hypot                                                                                                                                               (
+side.x, side.y                                                                                                                                        )
+ / 2                                                                                                                                                  };
+                                                                                                                                                      }
+Square::Square                                                                                                                                        (
+const Point& first_point, const Point& second_point                                                                                                   )
+ : Rectangle                                                                                                                                          (
+first_point, second_point, 1                                                                                                                          ){
+                                                                                                                                                      }
+class Triangle : public Polygon                                                                                                                       {
  public:
-  Triangle(const Point&, const Point&, const Point&);
-  Triangle() = default;
-  Circle circumscribedCircle();
-  Circle inscribedCircle();
-  Point centroid();
-  Point orthocenter();
-  Line EulerLine();
-  Circle ninePointsCircle();
-};
-Triangle::Triangle(const Point& first, const Point& second, const Point& third) {
-  vertices = {first, second, third};
-}
-Circle Triangle::circumscribedCircle() {
-  Point mid1 = (vertices[0] + vertices[1]) / 2, mid2 = (vertices[1] + vertices[2]) / 2;
-  Line midperpendicular1 = Line(vertices[0], vertices[1]).rotate(mid1, M_PI / 2);
-  Line midperpendicular2 = Line(vertices[1], vertices[2]).rotate(mid2, M_PI / 2);
-  Point center = midperpendicular1.Intersection(midperpendicular2);
-  Point radius = center - vertices[0];
-  return {center, hypot(radius.x, radius.y)};
-}
-Circle Triangle::inscribedCircle() {
-  Point vector1 = vertices[1] - vertices[0], vector2 = vertices[2] - vertices[0], vector3 = vertices[2] - vertices[1];
-  double angle1 = asin(vector1.VectorProd(vector2) / (hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)));
-  double angle2 = asin(vector3.VectorProd(-vector1) / (hypot(vector3.x, vector3.y) * hypot(vector1.x, vector1.y)));
-  angle1 /= 2;
-  angle2 /= 2;
-  Line line1 = Line(vertices[0], vertices[1]).rotate(vertices[0], angle1);
-  Line line2 = Line(vertices[1], vertices[2]).rotate(vertices[1], angle2);
-  return {line1.Intersection(line2), 2 * area() / perimeter()};
-}
+  Triangle                                                                                                                                            (
+const Point&, const Point&, const Point&                                                                                                              );
+  Triangle                                                                                                                                            ()
+ = default                                                                                                                                            ;
+  Circle circumscribedCircle                                                                                                                          ();
+  Circle inscribedCircle                                                                                                                              ();
+  Point centroid                                                                                                                                      ();
+  Point orthocenter                                                                                                                                   ();
+  Line EulerLine                                                                                                                                      ();
+  Circle ninePointsCircle                                                                                                                             ();
+                                                                                                                                                      };
+Triangle::Triangle                                                                                                                                    (
+const Point& first, const Point& second, const Point& third                                                                                           )
+                                                                                                                                                      {
+  vertices =                                                                                                                                          {
+first, second, third                                                                                                                                  };
+                                                                                                                                                      }
+Circle Triangle::circumscribedCircle                                                                                                                  ()
+                                                                                                                                                      {
+  Point mid1 =                                                                                                                                        (
+vertices[0] + vertices[1]                                                                                                                             )
+ / 2, mid2 =                                                                                                                                          (
+vertices[1] + vertices[2]                                                                                                                             )
+ / 2                                                                                                                                                  ;
+  Line midperpendicular1 = Line                                                                                                                       (
+vertices[0], vertices[1]                                                                                                                              )
+.rotate                                                                                                                                               (
+mid1, M_PI / 2                                                                                                                                        );
+  Line midperpendicular2 = Line                                                                                                                       (
+vertices[1], vertices[2]                                                                                                                              )
+.rotate                                                                                                                                               (
+mid2, M_PI / 2                                                                                                                                        );
+  Point center = midperpendicular1.Intersection                                                                                                       (
+midperpendicular2                                                                                                                                     );
+  Point radius = center - vertices[0]                                                                                                                 ;
+  return                                                                                                                                              {
+center, hypot                                                                                                                                         (
+radius.x, radius.y                                                                                                                                    )};
+                                                                                                                                                      }
+Circle Triangle::inscribedCircle                                                                                                                      ()
+                                                                                                                                                      {
+  Point vector1 = vertices[1] - vertices[0], vector2 = vertices[2] - vertices[0], vector3 = vertices[2] - vertices[1]                                 ;
+  double angle1 = asin                                                                                                                                (
+vector1.VectorProd                                                                                                                                    (
+vector2                                                                                                                                               )
+ /                                                                                                                                                    (
+hypot                                                                                                                                                 (
+vector1.x, vector1.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector2.x, vector2.y                                                                                                                                  )));
+  double angle2 = asin                                                                                                                                (
+vector3.VectorProd                                                                                                                                    (
+-vector1                                                                                                                                              )
+ /                                                                                                                                                    (
+hypot                                                                                                                                                 (
+vector3.x, vector3.y                                                                                                                                  )
+ * hypot                                                                                                                                              (
+vector1.x, vector1.y                                                                                                                                  )));
+  angle1 /= 2                                                                                                                                         ;
+  angle2 /= 2                                                                                                                                         ;
+  Line line1 = Line                                                                                                                                   (
+vertices[0], vertices[1]                                                                                                                              )
+.rotate                                                                                                                                               (
+vertices[0], angle1                                                                                                                                   );
+  Line line2 = Line                                                                                                                                   (
+vertices[1], vertices[2]                                                                                                                              )
+.rotate                                                                                                                                               (
+vertices[1], angle2                                                                                                                                   );
+  return                                                                                                                                              {
+line1.Intersection                                                                                                                                    (
+line2                                                                                                                                                 )
+, 2 * area                                                                                                                                            ()
+ / perimeter                                                                                                                                          ()};
+                                                                                                                                                      }
 
-Point Triangle::centroid() {
-  return (vertices[0] + vertices[1] + vertices[2]) / 3;
-}
-Point Triangle::orthocenter() {
-  Line line1 = {vertices[0], Line(vertices[1], vertices[2]).Height(vertices[0])};
-  Line line2 = {vertices[1], Line(vertices[2], vertices[0]).Height(vertices[1])};
-  return line1.Intersection(line2);
-}
-Line Triangle::EulerLine() {
-  return {centroid(), orthocenter()};
-}
 
-Circle Triangle::ninePointsCircle() {
-  Point mid1 = (vertices[0] + vertices[1]) / 2;
-  Point mid2 = (vertices[1] + vertices[2]) / 2;
-  Point mid3 = (vertices[0] + vertices[2]) / 2;
-  return Triangle(mid1, mid2, mid3).circumscribedCircle();
-}
+Point Triangle::centroid                                                                                                                              ()
+                                                                                                                                                      {
+  return                                                                                                                                              (
+vertices[0] + vertices[1] + vertices[2]                                                                                                               )
+ / 3                                                                                                                                                  ;
+                                                                                                                                                      }
+Point Triangle::orthocenter                                                                                                                           ()
+                                                                                                                                                      {
+  Line line1 =                                                                                                                                        {
+vertices[0], Line                                                                                                                                     (
+vertices[1], vertices[2]                                                                                                                              )
+.Height                                                                                                                                               (
+vertices[0]                                                                                                                                           )};
+  Line line2 =                                                                                                                                        {
+vertices[1], Line                                                                                                                                     (
+vertices[2], vertices[0]                                                                                                                              )
+.Height                                                                                                                                               (
+vertices[1]                                                                                                                                           )};
+  return line1.Intersection                                                                                                                           (
+line2                                                                                                                                                 );
+                                                                                                                                                      }
+Line Triangle::EulerLine                                                                                                                              ()
+                                                                                                                                                      {
+  return                                                                                                                                              {
+centroid                                                                                                                                              ()
+, orthocenter                                                                                                                                         ()};
+                                                                                                                                                      }
 
-bool Shape::operator==(const Shape& second) const {
-  const Polygon* this_copy = dynamic_cast<const Polygon*>(this);
-  if (this_copy != nullptr) {
-    const Polygon* second_copy = dynamic_cast<const Polygon*> (&second);
-    if (second_copy == nullptr || this_copy->verticesCount() != second_copy->verticesCount()) {
-      return false;
-    }
-    size_t size2 = second_copy->verticesCount();
-    bool is_same;
-    for (size_t i = 0; i < size2; ++i) {
-      is_same = true;
-      for (size_t j = 0; j < size2; ++j) {
-        if (this_copy->getVertices()[j] != second_copy->getVertices()[(i + j) % size2]) {
-          is_same = false;
-          break;
-        }
-      }
-      if (is_same) {
-        return true;
-      }
-      is_same = true;
-      for (size_t j = 0; j < size2; ++j) {
-        if (this_copy->getVertices()[j] != second_copy->getVertices()[(i + size2 - j) % size2]) {
-          is_same = false;
-          break;
-        }
-      }
-      if (is_same) {
-        return true;
-      }
-    }
-    return false;
-  }
-  const Ellipse* this_copy2 = dynamic_cast<const Ellipse*>(this);
-  if (this_copy2 != nullptr) {
-    const Ellipse* second_copy = dynamic_cast<const Ellipse*> (&second);
-    if (second_copy == nullptr) {
-      return false;
-    }
-    return this_copy2->focuses().first == second_copy->focuses().first && this_copy2->focuses().second == second_copy->focuses().second && IsSame(this_copy2->SemiMajorAxis(), second_copy->SemiMajorAxis());
-  }
-  return false;
-}
-bool Shape::operator!=(const Shape& second) const {
-  return !(*this == second);
-}
+
+Circle Triangle::ninePointsCircle                                                                                                                     ()
+                                                                                                                                                      {
+  Point mid1 =                                                                                                                                        (
+vertices[0] + vertices[1]                                                                                                                             )
+ / 2                                                                                                                                                  ;
+  Point mid2 =                                                                                                                                        (
+vertices[1] + vertices[2]                                                                                                                             )
+ / 2                                                                                                                                                  ;
+  Point mid3 =                                                                                                                                        (
+vertices[0] + vertices[2]                                                                                                                             )
+ / 2                                                                                                                                                  ;
+  return Triangle                                                                                                                                     (
+mid1, mid2, mid3                                                                                                                                      )
+.circumscribedCircle                                                                                                                                  ();
+                                                                                                                                                      }
+
+
+bool Shape::operator==                                                                                                                                (
+const Shape& second                                                                                                                                   )
+ const                                                                                                                                                {
+  const Polygon* this_copy = dynamic_cast<const Polygon*>                                                                                             (
+this                                                                                                                                                  );
+  if                                                                                                                                                  (
+this_copy != nullptr                                                                                                                                  )
+                                                                                                                                                      {
+    const Polygon* second_copy = dynamic_cast<const Polygon*>                                                                                         (
+&second                                                                                                                                               );
+    if                                                                                                                                                (
+second_copy == nullptr || this_copy->verticesCount                                                                                                    ()
+ != second_copy->verticesCount                                                                                                                        ())
+                                                                                                                                                      {
+      return false                                                                                                                                    ;
+                                                                                                                                                      }
+    size_t size2 = second_copy->verticesCount                                                                                                         ();
+    bool is_same                                                                                                                                      ;
+    for                                                                                                                                               (
+size_t i = 0                                                                                                                                          ;
+ i < size2                                                                                                                                            ;
+ ++i                                                                                                                                                  )
+                                                                                                                                                      {
+      is_same = true                                                                                                                                  ;
+      for                                                                                                                                             (
+size_t j = 0                                                                                                                                          ;
+ j < size2                                                                                                                                            ;
+ ++j                                                                                                                                                  )
+                                                                                                                                                      {
+        if                                                                                                                                            (
+this_copy->getVertices                                                                                                                                ()
+[j] != second_copy->getVertices                                                                                                                       ()
+[                                                                                                                                                     (
+i + j                                                                                                                                                 )
+ % size2]                                                                                                                                             )
+                                                                                                                                                      {
+          is_same = false                                                                                                                             ;
+          break                                                                                                                                       ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+      if                                                                                                                                              (
+is_same                                                                                                                                               )
+                                                                                                                                                      {
+        return true                                                                                                                                   ;
+                                                                                                                                                      }
+      is_same = true                                                                                                                                  ;
+      for                                                                                                                                             (
+size_t j = 0                                                                                                                                          ;
+ j < size2                                                                                                                                            ;
+ ++j                                                                                                                                                  )
+                                                                                                                                                      {
+        if                                                                                                                                            (
+this_copy->getVertices                                                                                                                                ()
+[j] != second_copy->getVertices                                                                                                                       ()
+[                                                                                                                                                     (
+i + size2 - j                                                                                                                                         )
+ % size2]                                                                                                                                             )
+                                                                                                                                                      {
+          is_same = false                                                                                                                             ;
+          break                                                                                                                                       ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+      if                                                                                                                                              (
+is_same                                                                                                                                               )
+                                                                                                                                                      {
+        return true                                                                                                                                   ;
+                                                                                                                                                      }
+                                                                                                                                                      }
+    return false                                                                                                                                      ;
+                                                                                                                                                      }
+  const Ellipse* this_copy2 = dynamic_cast<const Ellipse*>                                                                                            (
+this                                                                                                                                                  );
+  if                                                                                                                                                  (
+this_copy2 != nullptr                                                                                                                                 )
+                                                                                                                                                      {
+    const Ellipse* second_copy = dynamic_cast<const Ellipse*>                                                                                         (
+&second                                                                                                                                               );
+    if                                                                                                                                                (
+second_copy == nullptr                                                                                                                                )
+                                                                                                                                                      {
+      return false                                                                                                                                    ;
+                                                                                                                                                      }
+    return this_copy2->focuses                                                                                                                        ()
+.first == second_copy->focuses                                                                                                                        ()
+.first && this_copy2->focuses                                                                                                                         ()
+.second == second_copy->focuses                                                                                                                       ()
+.second && IsSame                                                                                                                                     (
+this_copy2->SemiMajorAxis                                                                                                                             ()
+, second_copy->SemiMajorAxis                                                                                                                          ());
+                                                                                                                                                      }
+  return false                                                                                                                                        ;
+                                                                                                                                                      }
+bool Shape::operator!=                                                                                                                                (
+const Shape& second                                                                                                                                   )
+ const                                                                                                                                                {
+  return !                                                                                                                                            (
+*this == second                                                                                                                                       );
+                                                                                                                                                      }
