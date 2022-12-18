@@ -234,6 +234,7 @@ class Shape {
 
   virtual Shape& scale(const Point&, double) = 0;
   bool operator==(const Shape&) const;
+  bool operator!=(const Shape&) const;
   virtual bool isCongruentTo(const Shape&) const = 0;
   virtual bool isSimilarTo(const Shape&) const = 0;
   virtual bool containsPoint(const Point&) const = 0;
@@ -849,4 +850,7 @@ bool Shape::operator==(const Shape& second) const {
     return this_copy2->focuses().first == second_copy->focuses().first && this_copy2->focuses().second == second_copy->focuses().second && IsSame(this_copy2->SemiMajorAxis(), second_copy->SemiMajorAxis());
   }
   return false;
+}
+bool Shape::operator!=(const Shape& second) const {
+  return !(*this == second);
 }
