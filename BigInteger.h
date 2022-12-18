@@ -72,6 +72,7 @@ class BigInteger {
   void Sum(const BigInteger&, long long, long long);
 
   std::vector<long long> digits_;
+  const long long power_ = 9;
   const long long kBase_ = 100000000;
   bool is_negative_ = false;
 };
@@ -203,8 +204,8 @@ bool BigInteger::operator==(const BigInteger& second) const {
   if (this->digits_.size() != second.digits_.size()) {
     return false;
   }
-  for (size_t i = this->digits_.size(); i > 0; --i) {
-    if (this->digits_[i - 1] != second.digits_[i - 1]) {
+  for (size_t i = digits_.size(); i > 0; --i) {
+    if (digits_[i - 1] != second.digits_[i - 1]) {
       return false;
     }
   }
@@ -466,17 +467,17 @@ BigInteger BigInteger::operator++(int) {
 
 std::string BigInteger::toString() const {
   std::string answer;
-  answer.reserve(digits_.size() * 8 + 1);
+  answer.reserve(digits_.size() * (power_ - 1) + 1);
   if (is_negative_) {
     answer.push_back('-');
   }
   std::string digit;
-  digit.reserve(9);
+  digit.reserve(power_);
   digit = std::to_string(digits_[digits_.size() - 1]);
   answer += digit;
   for (size_t i = digits_.size() - 1; i > 0; --i) {
     digit = std::to_string(digits_[i - 1]);
-    for (size_t j = 0; j + digit.length() < 8; ++j) {
+    for (size_t j = 0; j + digit.length() < (power_ - 1); ++j) {
       answer.push_back('0');
     }
     answer += digit;
@@ -523,18 +524,7 @@ BigInteger operator "" _bi(const char* input, size_t) {
 }
 
 class Rational {
- private:
-
-  BigInteger FindGCF();
-
-  void Reduce();
-
-  void CheckSigns();
-
-  BigInteger numerator_;
-  BigInteger denominator_;
-  const long long kBase_ = 100000000;
- public:
+  public:
 
   Rational() : numerator_(1), denominator_(1) {}
 
@@ -575,6 +565,18 @@ class Rational {
   std::string asDecimal(size_t);
 
   ~Rational() = default;
+
+private:
+
+  BigInteger FindGCF();
+
+  void Reduce();
+
+  void CheckSigns();
+
+  BigInteger numerator_;
+  BigInteger denominator_;
+  const long long kBase_ = 100000000;
 };
 
 BigInteger Rational::FindGCF() {
