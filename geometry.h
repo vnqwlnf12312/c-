@@ -652,6 +652,9 @@ bool Ellipse::isSimilarTo(const Shape& second) const {
     return false;
   }
   Point delta1 = focus1 - focus2, delta2 = second_copy->focus1 - second_copy->focus2;
+  if (!hypot(delta2.x, delta2.y)) {
+    return !hypot(delta1.x, delta1.y);
+  }
   return IsSame(hypot(delta1.x, delta1.y) / hypot(delta2.x, delta2.y), semi_major_axis / second_copy->semi_major_axis);
 }
 
