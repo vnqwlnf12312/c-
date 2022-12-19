@@ -201,7 +201,7 @@ bool BigInteger::operator==(const BigInteger& second) const {
   if (is_negative_ != second.is_negative_) {
     return false;
   }
-  if (this->digits_.size() != second.digits_.size()) {
+  if (digits_.size() != second.digits_.size()) {
     return false;
   }
   for (size_t i = digits_.size(); i > 0; --i) {
@@ -524,8 +524,7 @@ BigInteger operator "" _bi(const char* input, size_t) {
 }
 
 class Rational {
-  public:
-
+ public:
   Rational() : numerator_(1), denominator_(1) {}
 
   Rational(const Rational& second) = default;
@@ -566,8 +565,7 @@ class Rational {
 
   ~Rational() = default;
 
-private:
-
+ private:
   BigInteger FindGCF();
 
   void Reduce();
