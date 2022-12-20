@@ -267,8 +267,6 @@ class Shape {
 
 class Polygon : public Shape {
  public:
-  friend int main();
-
   Polygon() = default;
 
   Polygon(const std::vector<Point>&);
