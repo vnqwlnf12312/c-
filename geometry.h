@@ -2,8 +2,12 @@
 #include <vector>
 #include <cmath>
 
+namespace geometry {
+const double epsilon = 1e-8;
+}
+
 bool IsSame(double a, double b) {
-  return std::abs(a - b) < 1e-8;
+  return std::abs(a - b) < geometry::epsilon;
 }
 
 struct Point {
@@ -193,7 +197,7 @@ bool Line::operator!=(const Line& second) const {
 
 Line& Line::rotate(const Point& rotate_center, double angle) {
   Point first_point, second_point;
-  if (std::abs(A - 0) <= 1e-8) {
+  if (IsSame(A, 0)) {
     first_point = {1, -C / B};
     second_point = {-1, -C / B};
   } else {
@@ -217,7 +221,7 @@ Point Line::Intersection(const Line& second_line) const {
 
 Point Line::Height(const Point& point) const {
   Line second_line;
-  if (std::abs(A - 0) < 1e-8) {
+  if (IsSame(A, 0)) {
     second_line = point;
   } else {
     second_line = {point, B / A};
