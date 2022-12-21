@@ -852,7 +852,7 @@ class Triangle : public Polygon {
 
 Triangle::Triangle(const Point& first,
                    const Point& second,
-                   const Point& third) : vertices_(first, second, third){
+                   const Point& third) : Polygon(first, second, third){
 }
 
 Circle Triangle::circumscribedCircle() {
