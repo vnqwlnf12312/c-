@@ -4,6 +4,7 @@
 
 namespace geometry {
   bool IsSame(double, double);
+
   const double epsilon = 1e-8;
 }
 
@@ -163,7 +164,6 @@ class Line {
  protected:
   double A, B, C;
 };
-
 
 Line::Line(const Point& first_point, const Point& second_point) :
     A(second_point.y - first_point.y),
@@ -330,7 +330,7 @@ bool Polygon::isConvex() const {
   return true;
 }
 
-Polygon::Polygon(const std::vector<Point>& dots) : vertices_(dots){
+Polygon::Polygon(const std::vector<Point>& dots) : vertices_(dots) {
 }
 
 template<class... Args>
@@ -391,13 +391,13 @@ bool Polygon::isCongruentTo(const Shape& second) const {
           - second_copy->vertices_[(i + j) % size2];
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
-      if (!geometry::IsSame(std::abs(vector_prod1 / ((hypot(vector1.x, vector1.y)
-                      * hypot(vector2.x, vector2.y)))),
-                  std::abs(vector_prod2 / ((hypot(vector3.x, vector3.y)
-                      * hypot(vector4.x, vector4.y)))))
+      if (!geometry::IsSame(std::abs(vector_prod1
+                            / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
+                            std::abs(vector_prod2
+                            / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y), hypot(vector3.x, vector3.y))
           || !geometry::IsSame(hypot(vector2.x, vector2.y),
-                     hypot(vector4.x, vector4.y))) {
+                               hypot(vector4.x, vector4.y))) {
         is_congruent = false;
         break;
       }
@@ -415,13 +415,13 @@ bool Polygon::isCongruentTo(const Shape& second) const {
           - second_copy->vertices_[(i + size2 - j) % size2];
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
-      if (!geometry::IsSame(std::abs(vector_prod1 / ((hypot(vector1.x, vector1.y)
-                      * hypot(vector2.x, vector2.y)))),
-                  std::abs(vector_prod2 / ((hypot(vector3.x, vector3.y)
-                      * hypot(vector4.x, vector4.y)))))
+      if (!geometry::IsSame(std::abs(vector_prod1
+                            / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
+                            std::abs(vector_prod2
+                            / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y), hypot(vector3.x, vector3.y))
           || !geometry::IsSame(hypot(vector2.x, vector2.y),
-                     hypot(vector4.x, vector4.y))) {
+                               hypot(vector4.x, vector4.y))) {
         is_congruent = false;
         break;
       }
@@ -454,13 +454,12 @@ bool Polygon::isSimilarTo(const Shape& second) const {
           - second_copy->vertices_[(i + j) % size2];
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
-      if (!geometry::IsSame(vector_prod1 / ((hypot(vector1.x, vector1.y)
-                      * hypot(vector2.x, vector2.y))),
-                  vector_prod2 / ((hypot(vector3.x, vector3.y)
-                      * hypot(vector4.x, vector4.y))))
+      if (!geometry::IsSame(vector_prod1
+                            / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y))),
+                            vector_prod2
+                            / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y) / hypot(vector3.x, vector3.y),
-                     hypot(vector2.x,
-                           vector2.y / hypot(vector4.x, vector4.y)))) {
+                               hypot(vector2.x, vector2.y / hypot(vector4.x, vector4.y)))) {
         is_similar = false;
         break;
       }
@@ -479,12 +478,12 @@ bool Polygon::isSimilarTo(const Shape& second) const {
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
       if (!geometry::IsSame(vector_prod1 / ((hypot(vector1.x, vector1.y)
-                      * hypot(vector2.x, vector2.y))),
-                  vector_prod2 / ((hypot(vector3.x, vector3.y)
-                      * hypot(vector4.x, vector4.y))))
+                                * hypot(vector2.x, vector2.y))),
+                            vector_prod2 / ((hypot(vector3.x, vector3.y)
+                                * hypot(vector4.x, vector4.y))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y) / hypot(vector3.x, vector3.y),
-                     (hypot(vector2.x, vector2.y)
-                         / hypot(vector4.x, vector4.y)))) {
+                               (hypot(vector2.x, vector2.y)
+                                   / hypot(vector4.x, vector4.y)))) {
         is_similar = false;
         break;
       }
@@ -640,11 +639,9 @@ std::pair<Line, Line> Ellipse::directrices() const {
   double distance_from_dirrectrices = semi_major_axis / eccentricity();
   Point center = (focus1_ + focus2_) / 2;
   answer.first =
-      {center + delta * (distance_from_dirrectrices / distance_from_focuses),
-       slope};
+      {center + delta * (distance_from_dirrectrices / distance_from_focuses), slope};
   answer.second =
-      {center - delta * (distance_from_dirrectrices / distance_from_focuses),
-       slope};
+      {center - delta * (distance_from_dirrectrices / distance_from_focuses), slope};
   return answer;
 }
 
@@ -714,7 +711,7 @@ bool Ellipse::isSimilarTo(const Shape& second) const {
     return !hypot(delta1.x, delta1.y);
   }
   return geometry::IsSame(hypot(delta1.x, delta1.y) / hypot(delta2.x, delta2.y),
-                semi_major_axis / second_copy->semi_major_axis);
+                          semi_major_axis / second_copy->semi_major_axis);
 }
 
 bool Ellipse::containsPoint(const Point& point) const {
@@ -736,7 +733,7 @@ class Circle : public Ellipse {
   double area() const override;
 };
 
-Circle::Circle(const Point& center, double radius) : Ellipse(center, center, radius){
+Circle::Circle(const Point& center, double radius) : Ellipse(center, center, 2 * radius) {
 }
 
 double Circle::radius() const {
@@ -849,7 +846,7 @@ class Triangle : public Polygon {
 
 Triangle::Triangle(const Point& first,
                    const Point& second,
-                   const Point& third) : Polygon(first, second, third){
+                   const Point& third) : Polygon(first, second, third) {
 }
 
 Circle Triangle::circumscribedCircle() {
@@ -868,11 +865,9 @@ Circle Triangle::inscribedCircle() {
   Point vector1 = vertices_[1] - vertices_[0],
       vector2 = vertices_[2] - vertices_[0], vector3 = vertices_[2] - vertices_[1];
   double angle1 = asin(vector1.VectorProd(vector2)
-                           / (hypot(vector1.x, vector1.y)
-                               * hypot(vector2.x, vector2.y)));
+                           / (hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)));
   double angle2 = asin(vector3.VectorProd(-vector1)
-                           / (hypot(vector3.x, vector3.y)
-                               * hypot(vector1.x, vector1.y)));
+                           / (hypot(vector3.x, vector3.y) * hypot(vector1.x, vector1.y)));
   angle1 /= 2;
   angle2 /= 2;
   Line line1 = Line(vertices_[0], vertices_[1]).rotate(vertices_[0], angle1);
