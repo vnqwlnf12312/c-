@@ -604,19 +604,19 @@ class Ellipse : public Shape {
   bool containsPoint(const Point&) const override;
 
  protected:
-  Point focus1, focus2;
+  Point focus1_, focus2_;
   double semi_major_axis;
 };
 
-Ellipse::Ellipse() : focus1(0, 0), focus2(0, 0), semi_major_axis(1) {
+Ellipse::Ellipse() : focus1_(0, 0), focus2_(0, 0), semi_major_axis(1) {
 }
 
-Ellipse::Ellipse(const Point& focus1, const Point& focus2, double sum_len)
-    : focus1(focus1), focus2(focus2), semi_major_axis(sum_len / 2) {
+Ellipse::Ellipse(const Point& focus1_, const Point& focus2_, double sum_len)
+    : focus1_(focus1_), focus2_(focus2_), semi_major_axis(sum_len / 2) {
 }
 
 std::pair<Point, Point> Ellipse::focuses() const {
-  return {focus1, focus2};
+  return {focus1_, focus2_};
 }
 
 double Ellipse::SemiMajorAxis() const {
@@ -624,21 +624,21 @@ double Ellipse::SemiMajorAxis() const {
 }
 
 std::pair<Line, Line> Ellipse::directrices() const {
-  if (geometry::IsSame(focus1.y, focus2.y)) {
+  if (geometry::IsSame(focus1_.y, focus2_.y)) {
     std::pair<Line, Line> answer;
-    Point center((focus1.x + focus2.x) / 2, focus1.y);
+    Point center((focus1_.x + focus2_.x) / 2, focus1_.y);
     answer.first = Point(center.x + semi_major_axis * semi_major_axis * 2
-        / (focus1.x - focus2.x), center.y);
+        / (focus1_.x - focus2_.x), center.y);
     answer.second = Point(center.x - semi_major_axis * semi_major_axis * 2
-        / (focus1.x - focus2.x), center.y);
+        / (focus1_.x - focus2_.x), center.y);
     return answer;
   }
   std::pair<Line, Line> answer;
-  double slope = (focus1.x - focus2.x) / (focus2.y - focus1.y);
-  Point delta = (focus1 - focus2) / 2;
+  double slope = (focus1_.x - focus2_.x) / (focus2_.y - focus1_.y);
+  Point delta = (focus1_ - focus2_) / 2;
   double distance_from_focuses = hypot(delta.x, delta.y);
   double distance_from_dirrectrices = semi_major_axis / eccentricity();
-  Point center = (focus1 + focus2) / 2;
+  Point center = (focus1_ + focus2_) / 2;
   answer.first =
       {center + delta * (distance_from_dirrectrices / distance_from_focuses),
        slope};
@@ -649,35 +649,35 @@ std::pair<Line, Line> Ellipse::directrices() const {
 }
 
 double Ellipse::eccentricity() const {
-  Point delta = (focus1 - focus2) / 2;
+  Point delta = (focus1_ - focus2_) / 2;
   return hypot(delta.x, delta.y) / semi_major_axis;
 }
 
 Point Ellipse::center() const {
-  return (focus1 + focus2) / 2;
+  return (focus1_ + focus2_) / 2;
 }
 
 Ellipse& Ellipse::rotate(const Point& center_of_rotate, double angle) {
-  focus1.rotate(center_of_rotate, angle * M_PI / 180);
-  focus2.rotate(center_of_rotate, angle * M_PI / 180);
+  focus1_.rotate(center_of_rotate, angle * M_PI / 180);
+  focus2_.rotate(center_of_rotate, angle * M_PI / 180);
   return *this;
 }
 
 Ellipse& Ellipse::reflect(const Point& point) {
-  focus1.reflect(point);
-  focus2.reflect(point);
+  focus1_.reflect(point);
+  focus2_.reflect(point);
   return *this;
 }
 
 Ellipse& Ellipse::reflect(const Line& axis) {
-  axis.reflect_point(focus1);
-  axis.reflect_point(focus2);
+  axis.reflect_point(focus1_);
+  axis.reflect_point(focus2_);
   return *this;
 }
 
 Ellipse& Ellipse::scale(const Point& center_of_scale, double coefficient) {
-  focus1.scale(center_of_scale, coefficient);
-  focus2.scale(center_of_scale, coefficient);
+  focus1_.scale(center_of_scale, coefficient);
+  focus2_.scale(center_of_scale, coefficient);
   semi_major_axis *= coefficient;
   return *this;
 }
@@ -697,8 +697,8 @@ bool Ellipse::isCongruentTo(const Shape& second) const {
   if (second_copy == nullptr) {
     return false;
   }
-  Point delta1 = focus1 - focus2,
-      delta2 = second_copy->focus1 - second_copy->focus2;
+  Point delta1 = focus1_ - focus2_,
+      delta2 = second_copy->focus1_ - second_copy->focus2_;
   return geometry::IsSame(hypot(delta1.x, delta1.y), hypot(delta2.x, delta2.y))
       && geometry::IsSame(semi_major_axis, second_copy->semi_major_axis);
 }
@@ -708,8 +708,8 @@ bool Ellipse::isSimilarTo(const Shape& second) const {
   if (second_copy == nullptr) {
     return false;
   }
-  Point delta1 = focus1 - focus2,
-      delta2 = second_copy->focus1 - second_copy->focus2;
+  Point delta1 = focus1_ - focus2_,
+      delta2 = second_copy->focus1_ - second_copy->focus2_;
   if (!hypot(delta2.x, delta2.y)) {
     return !hypot(delta1.x, delta1.y);
   }
@@ -718,7 +718,7 @@ bool Ellipse::isSimilarTo(const Shape& second) const {
 }
 
 bool Ellipse::containsPoint(const Point& point) const {
-  Point vector1 = point - focus1, vector2 = point - focus2;
+  Point vector1 = point - focus1_, vector2 = point - focus2_;
   return hypot(vector1.x, vector1.y) + hypot(vector2.x, vector2.y)
       <= 2 * semi_major_axis;
 }
@@ -736,10 +736,7 @@ class Circle : public Ellipse {
   double area() const override;
 };
 
-Circle::Circle(const Point& center, double radius) {
-  focus1 = center;
-  focus2 = center;
-  semi_major_axis = radius;
+Circle::Circle(const Point& center, double radius) : Ellipse(center, center, radius){
 }
 
 double Circle::radius() const {
@@ -888,10 +885,10 @@ Point Triangle::centroid() {
 }
 
 Point Triangle::orthocenter() {
-  Line
-      line1 = {vertices_[0], Line(vertices_[1], vertices_[2]).Height(vertices_[0])};
-  Line
-      line2 = {vertices_[1], Line(vertices_[2], vertices_[0]).Height(vertices_[1])};
+  Line line1 =
+      {vertices_[0], Line(vertices_[1], vertices_[2]).Height(vertices_[0])};
+  Line line2 =
+      {vertices_[1], Line(vertices_[2], vertices_[0]).Height(vertices_[1])};
   return line1.Intersection(line2);
 }
 
