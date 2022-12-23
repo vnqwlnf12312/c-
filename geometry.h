@@ -16,7 +16,7 @@ struct Point {
  public:
   Point() = default;
 
-  Point(const double, const double);
+  Point(double, double);
 
   Point(const Point&) = default;
 
@@ -50,7 +50,7 @@ struct Point {
   double y;
 };
 
-Point::Point(const double x, const double y) : x(x), y(y) {
+Point::Point(double x, double y) : x(x), y(y) {
 }
 
 bool Point::operator==(const Point& second) const {
@@ -230,10 +230,6 @@ bool Line::IsParallel(const Line& second) const {
   return geometry::IsSame(A * second.B - B * second.A, 0);
 }
 
-class Polygon;
-
-class Ellipse;
-
 class Shape {
  public:
   virtual double area() const = 0;
@@ -339,33 +335,29 @@ Polygon::Polygon(const Point& p, Args... args) : Polygon(args...) {
 }
 
 Polygon& Polygon::rotate(const Point& rotate_center, double angle) {
-  size_t size = vertices_.size();
-  for (size_t i = 0; i < size; ++i) {
-    vertices_[i].rotate(rotate_center, angle * M_PI / 180);
+  for (Point& point : vertices_) {
+    point.rotate(rotate_center, angle * M_PI / 180);
   }
   return *this;
 }
 
 Polygon& Polygon::reflect(const Point& reflect_center) {
-  size_t size = vertices_.size();
-  for (size_t i = 0; i < size; ++i) {
-    vertices_[i].reflect(reflect_center);
+  for (Point& point : vertices_) {
+    point.reflect(reflect_center);
   }
   return *this;
 }
 
 Polygon& Polygon::reflect(const Line& axis) {
-  size_t size = vertices_.size();
-  for (size_t i = 0; i < size; ++i) {
-    axis.reflect_point(vertices_[i]);
+  for (Point& point : vertices_) {
+    axis.reflect_point(point);
   }
   return *this;
 }
 
 Polygon& Polygon::scale(const Point& center_of_scale, double coefficient) {
-  size_t size = vertices_.size();
-  for (size_t i = 0; i < size; ++i) {
-    vertices_[i].scale(center_of_scale, coefficient);
+  for (Point& point : vertices_) {
+    point.scale(center_of_scale, coefficient);
   }
   return *this;
 }
@@ -392,9 +384,9 @@ bool Polygon::isCongruentTo(const Shape& second) const {
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
       if (!geometry::IsSame(std::abs(vector_prod1
-                            / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
+                                         / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
                             std::abs(vector_prod2
-                            / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
+                                         / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y), hypot(vector3.x, vector3.y))
           || !geometry::IsSame(hypot(vector2.x, vector2.y),
                                hypot(vector4.x, vector4.y))) {
@@ -416,9 +408,9 @@ bool Polygon::isCongruentTo(const Shape& second) const {
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
       if (!geometry::IsSame(std::abs(vector_prod1
-                            / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
+                                         / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y)))),
                             std::abs(vector_prod2
-                            / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
+                                         / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y)))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y), hypot(vector3.x, vector3.y))
           || !geometry::IsSame(hypot(vector2.x, vector2.y),
                                hypot(vector4.x, vector4.y))) {
@@ -455,9 +447,9 @@ bool Polygon::isSimilarTo(const Shape& second) const {
       vector_prod1 = (vector1).VectorProd(vector2);
       vector_prod2 = (vector3).VectorProd(vector4);
       if (!geometry::IsSame(vector_prod1
-                            / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y))),
+                                / ((hypot(vector1.x, vector1.y) * hypot(vector2.x, vector2.y))),
                             vector_prod2
-                            / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y))))
+                                / ((hypot(vector3.x, vector3.y) * hypot(vector4.x, vector4.y))))
           || !geometry::IsSame(hypot(vector1.x, vector1.y) / hypot(vector3.x, vector3.y),
                                hypot(vector2.x, vector2.y / hypot(vector4.x, vector4.y)))) {
         is_similar = false;
