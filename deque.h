@@ -35,8 +35,6 @@ class Deque {
   class iterator_ {
    public:
     friend Deque;
-    friend iterator_ operator-(const iterator_&
-    first, const iterator_& second);
     using value_type = U;
     using pointer = value_type*;
     using difference_type = int;
