@@ -35,6 +35,8 @@ class StackAllocator {
   struct rebind {
     using other = StackAllocator<U, N>;
   };
+  bool operator==(const StackAllocator& other);
+  bool operator!=(const StackAllocator& other);
 
   template<typename U>
   StackAllocator(const StackAllocator<U, N>& other);
@@ -133,6 +135,16 @@ class List {
 
 template<size_t N>
 StackStorage<N>::~StackStorage() {}
+
+template<typename T, size_t N>
+bool StackAllocator<T, N>::operator==(const StackAllocator<T, N>& other) {} {
+  return storage_ == other.storage_;
+}
+
+template<typename T, size_t N>
+bool StackAllocator<T, N>::operator!=(const StackAllocator<T, N>& other) {} {
+return storage_ != other.storage_;
+}
 
 template<typename T, size_t N>
 StackAllocator<T, N>::StackAllocator() : storage_() {
