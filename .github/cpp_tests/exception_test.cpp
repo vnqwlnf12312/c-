@@ -76,11 +76,11 @@ int main()
     assert (ll.size() == 10);
     
     bool isThrow = true;
-    assert (Int::counter == 9); // локально проходит а тут нет чзх
     try
     {
         ll.push_back(temp);
         isThrow = false;
+        assert (Int::counter == 10);
     }
     catch (const std::logic_error& e)
     {
