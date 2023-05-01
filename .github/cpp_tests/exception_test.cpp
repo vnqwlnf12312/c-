@@ -79,7 +79,6 @@ int main()
     try
     {
         ll.push_back(temp);
-        throw 3;
         isThrow = false;
     }
     catch (const std::logic_error& e)
