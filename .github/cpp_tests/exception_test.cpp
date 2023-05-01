@@ -79,8 +79,8 @@ int main()
     try
     {
         ll.push_back(temp);
+        throw 3;
         isThrow = false;
-        assert (Int::counter == 10);
     }
     catch (const std::logic_error& e)
     {
