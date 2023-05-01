@@ -35,6 +35,8 @@ class Deque {
   class iterator_ {
    public:
     friend Deque;
+    friend iterator_ operator-(const iterator_&
+    first, const iterator_& second);
     using value_type = U;
     using pointer = value_type*;
     using difference_type = int;
@@ -149,8 +151,8 @@ void Deque<T>::construct(bool from_int, const Deque<T>* other,
             + (other->end_.row_
                 - other->array_),
         other->end().index_);
-    real_first_row = (from_int ? 0 : other->begin_.row_ - other->array_);
-    real_last_row = from_int ? size / row_size_ : other->end_.row_ - other->array_;
+    real_first_row = (from_int ? 0 : other->real_first_row);
+    real_last_row = from_int ? size / row_size_ : other->real_last_row;
   } catch (...) {
     for (size_t j = 0; j < i; ++j) {
       size_t row_index_ = from_int ? j / row_size_ : other->begin_.row_ -
@@ -351,6 +353,8 @@ void Deque<T>::push_front(const T& elem) {
       begin_ = iterator(new_arr + capacity_ - 1,
                         row_size_ - 1);
       end_ = iterator(new_arr + capacity_ + (end_.row_ - array_), end_.index_);
+      delete[] reinterpret_cast<char*>(array_);
+      array_ = new_arr;
       capacity_ *= 3;
     } catch (...) {
       for (iterator j = begin_; j != i; ++j) {
@@ -362,11 +366,6 @@ void Deque<T>::push_front(const T& elem) {
       delete[] reinterpret_cast<char*>(new_arr);
       throw;
     }
-    for (iterator i = begin_; i != end_; ++i) {
-      (i.element_)->~T();
-    }
-    delete[] reinterpret_cast<char*>(array_);
-    array_ = new_arr;
   } else {
     if (begin_.index_ == 0 && begin_.row_ - array_ - 1 < real_first_row) {
       *(begin_.row_ - 1) = reinterpret_cast<T*>(new
@@ -665,7 +664,7 @@ Deque<T>::~Deque() {
     }
     if (real_first_row != -1) {
       for (int i = real_first_row; i <= real_last_row; ++i) {
-        delete[] array_[i];
+        delete[] reinterpret_cast<char*>(array_[i]);
       }
     }
     delete[] array_;
