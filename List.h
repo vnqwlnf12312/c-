@@ -246,6 +246,7 @@ void List<T, Allocator>::construct(bool from_int, size_t size, const T* elem, co
     }
   } catch (...) {
     clear();
+    throw;
   }
   size_ = size;
 }
@@ -480,6 +481,7 @@ void List<T, Allocator>::insert(List<T, Allocator>::const_iterator it, const T& 
     }
     it.cur_node_->prev = prev;
     prev->next = it.cur_node_;
+    throw;
   }
   ++size_;
 }
@@ -492,7 +494,7 @@ void List<T, Allocator>::erase(List<T, Allocator>::const_iterator it) {
     std::allocator_traits<NodeAlloc>::destroy(node_alloc_, static_cast<Node*>(it.cur_node_));
     std::allocator_traits<NodeAlloc>::deallocate(node_alloc_, static_cast<Node*>(it.cur_node_), 1);
   } catch (...) {
-    return;
+    throw;
   }
   --size_;
-} // what??
+}
