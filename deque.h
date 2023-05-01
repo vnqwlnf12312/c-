@@ -74,7 +74,7 @@ class Deque {
   using riterator = std::reverse_iterator<iterator>;
   using criterator = std::reverse_iterator<const_iterator>;
  private:
-  static const int row_size_ = 2;
+  static const int row_size_ = 10;
   T** array_ = nullptr;
   size_t size_ = 0;
   size_t capacity_ = 0;
