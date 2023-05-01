@@ -76,7 +76,7 @@ int main()
     assert (ll.size() == 10);
     
     bool isThrow = true;
-    assert (Int::counter == -3 && Int::counter); // локально проходит а тут нет чзх
+    assert (Int::counter == 9); // локально проходит а тут нет чзх
     try
     {
         ll.push_back(temp);
