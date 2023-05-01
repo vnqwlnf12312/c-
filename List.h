@@ -269,7 +269,7 @@ List<T, Allocator>::List(size_t size, const Allocator& alloc) : List(alloc) {
 }
 
 template<typename T, class Allocator>
-List<T, Allocator>::List(size_t size, const T& elem, const Allocator& alloc) : List(size, alloc) {
+List<T, Allocator>::List(size_t size, const T& elem, const Allocator& alloc) : List(alloc) {
   construct<false>(true, size, &elem, nullptr);
 }
 
