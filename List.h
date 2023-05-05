@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "memory"
 
 template <size_t N>
@@ -16,7 +14,7 @@ template <typename T, size_t N>
 class StackAllocator {
  public:
   StackAllocator();
-  StackAllocator(StackStorage<N>& storage);
+  explicit StackAllocator(StackStorage<N>& storage);
 
   template <typename U, size_t M>
   friend class StackAllocator;
@@ -40,7 +38,7 @@ class StackAllocator {
   bool operator!=(const StackAllocator& other);
 
   template <typename U>
-  StackAllocator(const StackAllocator<U, N>& other);
+  explicit StackAllocator(const StackAllocator<U, N>& other);
 
   template <typename U>
   StackAllocator& operator=(const StackAllocator<U, N>& other);
@@ -76,9 +74,9 @@ class List {
 
  public:
   List();
-  List(size_t size);
+  explicit List(size_t size);
   List(size_t size, const T& elem);
-  List(const Allocator& alloc);
+  explicit List(const Allocator& alloc);
   List(size_t size, const Allocator& alloc);
   List(size_t size, const T& elem, const Allocator& alloc);
   List(const List<T, Allocator>& other);
@@ -103,7 +101,7 @@ class List {
     using iterator_category = std::bidirectional_iterator_tag;
     iterator_();
     iterator_(const iterator_<value_type>& other);
-    iterator_(BaseNode* node);
+    explicit iterator_(BaseNode* node);
     operator iterator_<const value_type>() const;
     iterator_& operator=(const iterator_<value_type>& other);
     iterator_<value_type>& operator++();
@@ -167,6 +165,9 @@ template <typename T, size_t N>
 template <typename U>
 StackAllocator<T, N>& StackAllocator<T, N>::operator=(
     const StackAllocator<U, N>& other) {
+  if (this == &other) {
+    return *this;
+  }
   storage_ = other.storage_;
   return *this;
 }
@@ -186,8 +187,6 @@ T* StackAllocator<T, N>::allocate(size_t n) {
 
 template <typename T, size_t N>
 void StackAllocator<T, N>::deallocate(T* pointer, size_t n) {
-  std::ignore = pointer;
-  std::ignore = n;
 }
 
 template <typename T, size_t N>
@@ -314,7 +313,7 @@ List<T, Allocator>& List<T, Allocator>::operator=(
     const List<T, Allocator>& other) {
   clear();
   if (std::allocator_traits<
-          Allocator>::propagate_on_container_copy_assignment::value) {
+      Allocator>::propagate_on_container_copy_assignment::value) {
     node_alloc_ = other.node_alloc_;
   }
   construct<false>(false, other.size_, nullptr, &other);
@@ -475,13 +474,13 @@ typename List<T, Allocator>::reverse_iterator List<T, Allocator>::rend() {
 
 template <typename T, class Allocator>
 typename List<T, Allocator>::const_reverse_iterator List<T, Allocator>::rbegin()
-    const {
+const {
   return std::reverse_iterator(end());
 }
 
 template <typename T, class Allocator>
 typename List<T, Allocator>::const_reverse_iterator List<T, Allocator>::rend()
-    const {
+const {
   return std::reverse_iterator(begin());
 }
 
@@ -493,7 +492,7 @@ List<T, Allocator>::crbegin() const {
 
 template <typename T, class Allocator>
 typename List<T, Allocator>::const_reverse_iterator List<T, Allocator>::crend()
-    const {
+const {
   return std::reverse_iterator(List<T, Allocator>::const_iterator(&end_));
 }
 
