@@ -135,7 +135,7 @@ class UnorderedMap {
   const_iterator cend() const;
 
   UnorderedMap() = default;
-  explicit UnorderedMap(const UnorderedMap& other);
+  UnorderedMap(const UnorderedMap& other);
   explicit UnorderedMap(UnorderedMap&& other);
 
   ~UnorderedMap();
@@ -1156,3 +1156,4 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::find(const Key& key) const {
     throw;
   }
 }
+
