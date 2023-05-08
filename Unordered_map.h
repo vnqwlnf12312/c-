@@ -2,17 +2,42 @@
 #include "vector"
 
 template <typename Key, typename Value, typename Hash = std::hash<Key>,
-    typename Equal = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, Value>>>
+          typename Equal = std::equal_to<Key>,
+          typename Alloc = std::allocator<std::pair<const Key, Value>>>
 class UnorderedMap {
  public:
   using NodeType = std::pair<const Key, Value>;
-  using NodeTypeAlloc =
-      typename std::allocator_traits<Alloc>::template rebind_alloc<NodeType>;
+  UnorderedMap() = default;
+  UnorderedMap(const UnorderedMap& other);
+  explicit UnorderedMap(UnorderedMap&& other);
+
+  ~UnorderedMap();
+
+  UnorderedMap& operator=(const UnorderedMap& other);
+  UnorderedMap& operator=(UnorderedMap&& other);
+
+  Value& operator[](const Key& key);
+  Value& operator[](Key&& key);
+  Value& at(const Key& key);
+  const Value& at(const Key& key) const;
+  void swap(UnorderedMap& other);
+
+  template <typename InputIt>
+  void insert(InputIt first, InputIt last);
+
+  float load_factor() const;
+  float max_load_factor() const;
+  void max_load_factor(float new_factor);
+  void reserve(size_t count);
+
+  void rehash(size_t count);
+  size_t size() const;
 
  private:
-  template <typename T, class Allocator = std::allocator<T>>
-  class List {
+  using NodeTypeAlloc =
+      typename std::allocator_traits<Alloc>::template rebind_alloc<NodeType>;
+  template <typename T, class Allocator>
+  class List {  // без этого объявления я не могу объявить итератор
    private:
     struct BaseNode {
       friend UnorderedMap;
@@ -117,16 +142,19 @@ class UnorderedMap {
     void erase(const_iterator it);
   };
 
-  List<NodeType, Alloc> list_;
-  std::vector<typename List<NodeType, Alloc>::BaseNode*> array_;
-  float max_load_factor_ = 0.5;
-
-  void clear();
-
  public:
   using iterator = typename List<NodeType, Alloc>::iterator;
   using const_iterator = typename List<NodeType, Alloc>::const_iterator;
 
+  iterator find(const Key& key);
+  const_iterator find(const Key& key) const;
+  iterator erase(iterator pos);
+  void erase(iterator first, iterator last);
+  template <typename... Args>
+  std::pair<iterator, bool> emplace(Args&&... args);
+
+  std::pair<iterator, bool> insert(const NodeType& value);
+  std::pair<iterator, bool> insert(NodeType&& value);
   iterator begin();
   const_iterator begin() const;
   const_iterator cbegin() const;
@@ -134,46 +162,15 @@ class UnorderedMap {
   const_iterator end() const;
   const_iterator cend() const;
 
-  UnorderedMap() = default;
-  UnorderedMap(const UnorderedMap& other);
-  explicit UnorderedMap(UnorderedMap&& other);
-
-  ~UnorderedMap();
-
-  UnorderedMap& operator=(const UnorderedMap& other);
-  UnorderedMap& operator=(UnorderedMap&& other);
-
-  Value& operator[](const Key& key);
-  Value& operator[](Key&& key);
-  Value& at(const Key& key);
-  const Value& at(const Key& key) const;
-  iterator find(const Key& key);
-  const_iterator find(const Key& key) const;
-  void swap(UnorderedMap& other);
-
-  template <typename... Args>
-  std::pair<iterator, bool> emplace(Args&&... args);
-
-  std::pair<iterator, bool> insert(const NodeType& value);
-  std::pair<iterator, bool> insert(NodeType&& value);
-
-  template <typename InputIt>
-  void insert(InputIt first, InputIt last);
-
-  iterator erase(iterator pos);
-  void erase(iterator first, iterator last);
-
-  float load_factor() const;
-  float max_load_factor() const;
-  void max_load_factor(float new_factor);
-  void reserve(size_t count);
-
-  void rehash(size_t count);
-  size_t size() const;
+ private:
+  void clear();
+  List<NodeType, Alloc> list_;
+  std::vector<typename List<NodeType, Alloc>::BaseNode*> array_;
+  float max_load_factor_ = 0.5;
 };
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename... Args>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::emplace(
@@ -191,7 +188,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::emplace(
   }
 }
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, typename Allocator>
 template <typename U>
 typename UnorderedMap<Key, Value, Hash, Equal,
@@ -202,7 +199,7 @@ UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<
     T, Allocator>::BaseNode::BaseNode(List::BaseNode* prev,
@@ -210,11 +207,11 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<
     : prev(prev), next(next) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::BaseNode::
-BaseNode(UnorderedMap<Key, Value, Hash, Equal,
-                      Alloc>::List<T, Allocator>::BaseNode&& other)
+    BaseNode(UnorderedMap<Key, Value, Hash, Equal,
+                          Alloc>::List<T, Allocator>::BaseNode&& other)
     : prev(std::move(other.prev)),
       next(std::move(other.next)),
       hash(std::move(other.hash)) {
@@ -224,7 +221,7 @@ BaseNode(UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::BaseNode&
@@ -251,7 +248,7 @@ operator=(UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::Node::Node(
     List<T, Allocator>::BaseNode* prev, List<T, Allocator>::BaseNode* next)
@@ -264,7 +261,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::Node::Node(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::Node::Node(
     List<T, Allocator>::BaseNode* prev, List<T, Allocator>::BaseNode* next,
@@ -278,13 +275,13 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::Node::Node(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List()
     : end_(BaseNode{&end_, &end_}), size_(0), node_alloc_(Allocator()) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::clear() {
   while (end_.prev != &end_) {
@@ -293,7 +290,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::clear() {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <bool has_default_constructor>
 void UnorderedMap<Key, Value, Hash, Equal,
@@ -335,7 +332,7 @@ void UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     size_t size)
@@ -344,7 +341,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     size_t size, const T& elem)
@@ -353,14 +350,14 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     const Allocator& alloc)
     : end_(BaseNode{&end_, &end_}), size_(0), node_alloc_(alloc) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     size_t size, const Allocator& alloc)
@@ -369,7 +366,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     size_t size, const T& elem, const Allocator& alloc)
@@ -378,7 +375,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::NodeAlloc&
@@ -388,7 +385,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     const List<T, Allocator>& other)
@@ -400,7 +397,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
     List<T, Allocator>&& other)
@@ -411,7 +408,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::List(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<T,
                                                                      Allocator>&
@@ -419,7 +416,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::operator=(
     const List<T, Allocator>& other) {
   clear();
   if (std::allocator_traits<
-      Allocator>::propagate_on_container_copy_assignment::value) {
+          Allocator>::propagate_on_container_copy_assignment::value) {
     node_alloc_ = other.node_alloc_;
   }
   construct<false>(false, other.size_, nullptr, &other);
@@ -427,7 +424,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::operator=(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<T,
                                                                      Allocator>&
@@ -435,7 +432,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::operator=(
     List<T, Allocator>&& other) {
   clear();
   if (std::allocator_traits<
-      Allocator>::propagate_on_container_move_assignment::value) {
+          Allocator>::propagate_on_container_move_assignment::value) {
     node_alloc_ = std::move(other.node_alloc_);
   }
   end_ = std::move(other.end_);
@@ -445,15 +442,15 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::operator=(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 size_t UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::size()
-const {
+    const {
   return size_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal,
                   Alloc>::List<T, Allocator>::push_back(const T& elem) {
@@ -461,7 +458,7 @@ void UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T,
                                                         Allocator>::pop_back() {
@@ -469,7 +466,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal,
                   Alloc>::List<T, Allocator>::push_front(const T& elem) {
@@ -477,7 +474,7 @@ void UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal,
                   Alloc>::List<T, Allocator>::pop_front() {
@@ -485,14 +482,14 @@ void UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::~List() {
   clear();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 UnorderedMap<Key, Value, Hash, Equal,
@@ -500,7 +497,7 @@ UnorderedMap<Key, Value, Hash, Equal,
     : cur_node_(nullptr) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::iterator_<
@@ -508,7 +505,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::iterator_<
     : cur_node_(other.cur_node_) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 UnorderedMap<Key, Value, Hash, Equal,
@@ -516,7 +513,7 @@ UnorderedMap<Key, Value, Hash, Equal,
     : cur_node_(node) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
@@ -528,7 +525,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::iterator_<
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
@@ -540,7 +537,7 @@ UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 typename UnorderedMap<Key, Value, Hash, Equal,
@@ -553,7 +550,7 @@ UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
@@ -565,7 +562,7 @@ UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 typename UnorderedMap<Key, Value, Hash, Equal,
@@ -578,7 +575,7 @@ UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 U& UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
@@ -587,7 +584,7 @@ U& UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 U* UnorderedMap<Key, Value, Hash, Equal,
@@ -596,7 +593,7 @@ U* UnorderedMap<Key, Value, Hash, Equal,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<
@@ -605,7 +602,7 @@ bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<
@@ -614,7 +611,7 @@ bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::iterator
@@ -623,27 +620,27 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::begin() {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::begin()
-const {
+    const {
   return const_iterator(end_.next);
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::cbegin()
-const {
+    const {
   return const_iterator(end_.next);
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::iterator
@@ -652,7 +649,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::end() {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::const_iterator
@@ -661,7 +658,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::end() const {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::const_iterator
@@ -670,7 +667,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::cend() const {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::reverse_iterator
@@ -679,7 +676,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::rbegin() {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal,
                       Alloc>::template List<T, Allocator>::reverse_iterator
@@ -688,17 +685,17 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::rend() {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
     T, Allocator>::const_reverse_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::rbegin()
-const {
+    const {
   return std::reverse_iterator(end());
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
     T, Allocator>::const_reverse_iterator
@@ -707,27 +704,27 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::rend() const {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
     T, Allocator>::const_reverse_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::crbegin()
-const {
+    const {
   return std::reverse_iterator(List<T, Allocator>::const_iterator(end_.next));
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template List<
     T, Allocator>::const_reverse_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::crend()
-const {
+    const {
   return std::reverse_iterator(List<T, Allocator>::const_iterator(&end_));
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 template <typename U>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::iterator_<
@@ -738,7 +735,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::iterator_<
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::insert(
     List<T, Allocator>::const_iterator it, const T& elem) {
@@ -762,22 +759,22 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::insert(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal,
                   Alloc>::List<T, Allocator>::insertNode(const_iterator it,
-BaseNode* node) {
-node->prev->next = node->next;
-node->next->prev = node->prev;
-node->prev = it.getNode()->prev;
-node->next = it.getNode();
-it.getNode()->prev->next = node;
-it.getNode()->prev = node;
-++size_;
+                                                         BaseNode* node) {
+  node->prev->next = node->next;
+  node->next->prev = node->prev;
+  node->prev = it.getNode()->prev;
+  node->next = it.getNode();
+  it.getNode()->prev->next = node;
+  it.getNode()->prev = node;
+  ++size_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename T, class Allocator>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::erase(
     List<T, Allocator>::const_iterator it) {
@@ -793,62 +790,62 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::List<T, Allocator>::erase(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::clear() {
   list_.clear();
   array_.assign(array_.size(), nullptr);
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::~UnorderedMap() {
   clear();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::begin() {
   return list_.begin();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::begin() const {
   return const_iterator(list_.cbegin());
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::cbegin() const {
   return list_.cbegin();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::end() {
   return list_.end();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::end() const {
   return list_.end();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::cend() const {
   return list_.cend();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename... Args>
 std::pair<typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator, bool>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::emplace(Args&&... args) {
@@ -857,12 +854,12 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::emplace(Args&&... args) {
                                                            1);
   try {
     typename std::allocator_traits<typename List<NodeType, Alloc>::NodeAlloc>::
-    template rebind_alloc<NodeType>
-        node_type_alloc_(list_.node_alloc_);
+        template rebind_alloc<NodeType>
+            node_type_alloc_(list_.node_alloc_);
     std::allocator_traits<typename std::allocator_traits<typename List<
         NodeType, Alloc>::NodeAlloc>::template rebind_alloc<NodeType>>::
-    construct(node_type_alloc_, &(new_node->value),
-              std::forward<Args>(args)...);
+        construct(node_type_alloc_, &(new_node->value),
+                  std::forward<Args>(args)...);
     new_node->hash = Hash{}(new_node->value.first);
   } catch (...) {
     throw "OLOLO";
@@ -872,7 +869,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::emplace(Args&&... args) {
     std::allocator_traits<typename List<NodeType, Alloc>::NodeAlloc>::destroy(
         list_.node_alloc_, new_node);
     std::allocator_traits<typename List<NodeType, Alloc>::NodeAlloc>::
-    deallocate(list_.node_alloc_, new_node, 1);
+        deallocate(list_.node_alloc_, new_node, 1);
     return std::make_pair(it, false);
   }
   if (max_load_factor_ * array_.size() <= list_.size()) {
@@ -886,7 +883,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::emplace(Args&&... args) {
   } else {
     iterator iter = array_[index];
     while (iter != list_.end() &&
-        iter.getNode()->hash % array_.size() == index) {
+           iter.getNode()->hash % array_.size() == index) {
       ++iter;
     }
     place_to_insert = iter.getNode();
@@ -900,7 +897,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::emplace(Args&&... args) {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::rehash(size_t count) {
   List<NodeType, Alloc> new_list;
   array_.resize(count);
@@ -916,7 +913,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::rehash(size_t count) {
     } else {
       iterator iter = array_[index];
       while (iter != new_list.end() &&
-          iter.getNode()->hash % array_.size() == index) {
+             iter.getNode()->hash % array_.size() == index) {
         ++iter;
       }
       new_list.insertNode(iter, it.getNode());
@@ -926,7 +923,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::rehash(size_t count) {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 std::pair<typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator, bool>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::insert(
     const UnorderedMap::NodeType& value) {
@@ -934,7 +931,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::insert(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 std::pair<typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator, bool>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::insert(
     UnorderedMap::NodeType&& value) {
@@ -943,7 +940,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::insert(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 template <typename InputIt>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::insert(InputIt first,
                                                           InputIt last) {
@@ -953,13 +950,13 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::insert(InputIt first,
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 size_t UnorderedMap<Key, Value, Hash, Equal, Alloc>::size() const {
   return list_.size();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::erase(
     UnorderedMap::iterator pos) {
@@ -982,28 +979,28 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::erase(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::erase(iterator first,
-iterator last) {
-for (iterator it = first; it != last;) {
-it = erase(it);
-}
+                                                         iterator last) {
+  for (iterator it = first; it != last;) {
+    it = erase(it);
+  }
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 float UnorderedMap<Key, Value, Hash, Equal, Alloc>::load_factor() const {
   return static_cast<float>(list_.size()) / array_.size();
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 float UnorderedMap<Key, Value, Hash, Equal, Alloc>::max_load_factor() const {
   return max_load_factor_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::max_load_factor(
     float new_factor) {
   max_load_factor_ = new_factor;
@@ -1011,7 +1008,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::max_load_factor(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 void UnorderedMap<Key, Value, Hash, Equal, Alloc>::reserve(size_t count) {
   if (array_.size() * max_load_factor_ < count) {
     rehash(count / max_load_factor_ + 1);
@@ -1019,7 +1016,7 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::reserve(size_t count) {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::UnorderedMap(
     const UnorderedMap<Key, Value, Hash, Equal, Alloc>& other)
     : max_load_factor_(other.max_load_factor_) {
@@ -1029,7 +1026,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::UnorderedMap(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::UnorderedMap(
     UnorderedMap<Key, Value, Hash, Equal, Alloc>&& other)
     : list_(std::move(other.list_)),
@@ -1037,7 +1034,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::UnorderedMap(
       max_load_factor_(std::move(other.max_load_factor_)) {}
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>&
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator=(
     const UnorderedMap<Key, Value, Hash, Equal, Alloc>& other) {
@@ -1061,7 +1058,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator=(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 UnorderedMap<Key, Value, Hash, Equal, Alloc>&
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator=(
     UnorderedMap<Key, Value, Hash, Equal, Alloc>&& other) {
@@ -1072,7 +1069,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator=(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator[](
     const Key& key) {
   auto to_return = emplace(key, std::move(Value()));
@@ -1080,14 +1077,14 @@ Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator[](
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::operator[](Key&& key) {
   auto to_return = emplace(std::move(key), std::move(Value()));
   return to_return.first->second;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::at(const Key& key) {
   iterator it = find(key);
   if (it == end()) {
@@ -1097,7 +1094,7 @@ Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::at(const Key& key) {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 const Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::at(
     const Key& key) const {
   const_iterator it = find(key);
@@ -1108,7 +1105,7 @@ const Value& UnorderedMap<Key, Value, Hash, Equal, Alloc>::at(
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::find(const Key& key) {
   if (size() == 0) {
@@ -1133,7 +1130,7 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::find(const Key& key) {
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
-    typename Alloc>
+          typename Alloc>
 typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::const_iterator
 UnorderedMap<Key, Value, Hash, Equal, Alloc>::find(const Key& key) const {
   if (size() == 0) {
@@ -1156,4 +1153,3 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::find(const Key& key) const {
     throw;
   }
 }
-
