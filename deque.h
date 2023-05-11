@@ -30,13 +30,15 @@ class Deque {
     iterator_();
     iterator_(const iterator_<value_type>& other);
     iterator_(pointer* row, size_t index);
-    ~iterator_() {}
+    ~iterator_() = default;
     iterator_& operator=(const iterator_<value_type>& other);
     operator iterator_<const value_type>();
     iterator_<value_type>& operator++();
     iterator_<value_type> operator++(int);
     iterator_<value_type>& operator--();
-    iterator_<value_type> operator--(int); // объясни пж че здесь надо, не константный же итератор мне возвращать
+    iterator_<value_type> operator--(
+        int);  // объясни пж че здесь надо, не константный же итератор мне
+               // возвращать
     iterator_<value_type>& operator+=(int delta);
     iterator_<value_type> operator+(int delta) const;
     iterator_<value_type>& operator-=(int delta);
@@ -102,7 +104,7 @@ void Deque<T>::construct(bool from_int, const Deque<T>* other, const T* elem,
     for (; i < size; ++i) {
       size_t row_index_ = from_int ? i / row_size_
                                    : other->begin_.row_ - other->array_ +
-              (i + other->begin_.index_) / row_size_;
+                                         (i + other->begin_.index_) / row_size_;
       size_t elem_index_ =
           (i + (from_int ? 0 : other->begin_.index_)) % row_size_;
       if (i == 0 || elem_index_ == 0) {
@@ -135,7 +137,7 @@ void Deque<T>::construct(bool from_int, const Deque<T>* other, const T* elem,
     for (size_t j = 0; j < i; ++j) {
       size_t row_index_ = from_int ? j / row_size_
                                    : other->begin_.row_ - other->array_ +
-              (j + other->begin_.index_) / row_size_;
+                                         (j + other->begin_.index_) / row_size_;
       size_t elem_index_ =
           (j + (from_int ? 0 : other->begin_.index_)) % row_size_;
       (*(array_ + row_index_) + elem_index_)->~T();
@@ -143,7 +145,7 @@ void Deque<T>::construct(bool from_int, const Deque<T>* other, const T* elem,
     for (size_t j = 0; j < i; ++j) {
       size_t row_index_ = from_int ? j / row_size_
                                    : other->begin_.row_ - other->array_ +
-              (j + other->begin_.index_) / row_size_;
+                                         (j + other->begin_.index_) / row_size_;
       size_t elem_index_ =
           (j + (from_int ? 0 : other->begin_.index_)) % row_size_;
       if (j == 0 || elem_index_ == 0) {
@@ -166,7 +168,7 @@ Deque<T>::Deque(const Deque<T>& other)
 template <typename T>
 Deque<T>::Deque(int size, const T& element)
     : array_(reinterpret_cast<T**>(
-                 new char[sizeof(T*) * (size + row_size_) / row_size_])),
+          new char[sizeof(T*) * (size + row_size_) / row_size_])),
       size_(size),
       capacity_((size + row_size_) / row_size_) {
   construct<false>(true, nullptr, &element, size);
@@ -175,7 +177,7 @@ Deque<T>::Deque(int size, const T& element)
 template <typename T>
 Deque<T>::Deque(int size)
     : array_(reinterpret_cast<T**>(
-                 new char[sizeof(T*) * (size + row_size_) / row_size_])),
+          new char[sizeof(T*) * (size + row_size_) / row_size_])),
       size_(size),
       capacity_((size + row_size_) / row_size_) {
   construct<true>(true, nullptr, nullptr, size);
@@ -426,7 +428,7 @@ typename Deque<T>::template iterator_<U> Deque<T>::iterator_<U>::operator--(
 template <typename T>
 template <typename U>
 typename Deque<T>::template iterator_<U>&
-Deque<T>::template iterator_<U>::operator+=(int delta) {
+    Deque<T>::template iterator_<U>::operator+=(int delta) {
   if (row_ == nullptr) {
     return *this;
   }
@@ -437,8 +439,8 @@ Deque<T>::template iterator_<U>::operator+=(int delta) {
     delta = -delta;
     row_ -= (row_size_ - 1 - index_ + delta) / row_size_;
     index_ = index_ >= static_cast<size_t>(delta)
-             ? index_ - delta
-             : (row_size_ + (index_ - delta) % row_size_) % row_size_;
+                 ? index_ - delta
+                 : (row_size_ + (index_ - delta) % row_size_) % row_size_;
   }
   element_ = *row_ + index_;
   return *this;
@@ -447,7 +449,7 @@ Deque<T>::template iterator_<U>::operator+=(int delta) {
 template <typename T>
 template <typename U>
 typename Deque<T>::template iterator_<U>
-Deque<T>::template iterator_<U>::operator+(int delta) const {
+    Deque<T>::template iterator_<U>::operator+(int delta) const {
   iterator_<U> to_return = *this;
   to_return += delta;
   return to_return;
@@ -456,7 +458,7 @@ Deque<T>::template iterator_<U>::operator+(int delta) const {
 template <typename T>
 template <typename U>
 typename Deque<T>::template iterator_<U>&
-Deque<T>::template iterator_<U>::operator-=(int delta) {
+    Deque<T>::template iterator_<U>::operator-=(int delta) {
   *this += (-delta);
   return *this;
 }
@@ -464,7 +466,7 @@ Deque<T>::template iterator_<U>::operator-=(int delta) {
 template <typename T>
 template <typename U>
 typename Deque<T>::template iterator_<U>
-Deque<T>::template iterator_<U>::operator-(int delta) const {
+    Deque<T>::template iterator_<U>::operator-(int delta) const {
   iterator_<U> to_return = *this;
   to_return -= delta;
   return to_return;
@@ -664,32 +666,32 @@ Deque<T>::~Deque() {
 
 template <typename T>
 void Deque<T>::insert(iterator place, const T& elem) {
-if (begin_.row_ == nullptr) {
-push_back(elem);
-return;
-}
-if (end_.index_ == row_size_ - 1) {
-size_t remember_row = place.row_ - array_;
-size_t remember_index = place.index_;
-size_t remember_cap = capacity_;
-push_back(*(end_ - 1).element_);
-place = iterator(array_ + remember_row +
-                     ((remember_cap == capacity_) ? 0 : remember_cap),
-                 remember_index);
-} else {
-++end_;
-++size_;
-}
-for (iterator i = end_ - 1; i > place; --i) {
-*i.element_ = *(i - 1).element_;
-}
-*place.element_ = elem;
+  if (begin_.row_ == nullptr) {
+    push_back(elem);
+    return;
+  }
+  if (end_.index_ == row_size_ - 1) {
+    size_t remember_row = place.row_ - array_;
+    size_t remember_index = place.index_;
+    size_t remember_cap = capacity_;
+    push_back(*(end_ - 1).element_);
+    place = iterator(array_ + remember_row +
+                         ((remember_cap == capacity_) ? 0 : remember_cap),
+                     remember_index);
+  } else {
+    ++end_;
+    ++size_;
+  }
+  for (iterator i = end_ - 1; i > place; --i) {
+    *i.element_ = *(i - 1).element_;
+  }
+  *place.element_ = elem;
 }
 
 template <typename T>
 void Deque<T>::erase(iterator place) {
-for (iterator i = place + 1; i < end_; ++i) {
-*(i - 1).element_ = *i.element_;
-}
-pop_back();
+  for (iterator i = place + 1; i < end_; ++i) {
+    *(i - 1).element_ = *i.element_;
+  }
+  pop_back();
 }
