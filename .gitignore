@@ -1,0 +1,5 @@
+*.txt
+*.out
+*.json
+.vscode/
+.vscode/targets.log
