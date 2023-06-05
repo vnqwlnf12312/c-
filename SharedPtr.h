@@ -20,7 +20,7 @@ struct ControlBlockAllocateShared : BaseControlBlock {
   void destroyThis() override;
   void useDeleter() override;
   Alloc alloc;
-  alignas(U) size_8t elem[sizeof(U)];
+  alignas(U) int8_t elem[sizeof(U)];
 };
 template <typename U, typename Alloc, typename Deleter>
 struct ControlBlockRegular : BaseControlBlock {
