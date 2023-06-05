@@ -145,7 +145,7 @@ class UnorderedMap {
     size_t hash;
   };
   template <typename U, typename L>
-  class base_iterator {
+  class iterator_ {
    public:
     friend class UnorderedMap;
 
@@ -155,31 +155,30 @@ class UnorderedMap {
     using reference = value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    base_iterator() = default;
+    iterator_() = default;
 
     reference operator*() const;
     pointer operator->() const;
-    base_iterator& operator++();
-    base_iterator operator++(int);
-    operator base_iterator<const U, const L>() const {
-      return base_iterator<const U, const L>(iterator_);
+    iterator_& operator++();
+    iterator_ operator++(int);
+    operator iterator_<const U, const L>() const {
+      return iterator_<const U, const L>(list_iterator_);
     }
-    bool operator==(const base_iterator<U, L>& other) const;
-    bool operator!=(const base_iterator<U, L>& other) const;
+    bool operator==(const iterator_<U, L>& other) const;
+    bool operator!=(const iterator_<U, L>& other) const;
 
    private:
-    explicit base_iterator(
-        typename List<Bucket, Alloc>::template iterator_<U> iter)
-        : iterator_(iter) {}
-    explicit base_iterator(typename List<Bucket, Alloc>::BaseNode* node)
-        : iterator_(node) {}
+    explicit iterator_(typename List<Bucket, Alloc>::template iterator_<U> iter)
+        : list_iterator_(iter) {}
+    explicit iterator_(typename List<Bucket, Alloc>::BaseNode* node)
+        : list_iterator_(node) {}
 
-    typename List<Bucket, Alloc>::template iterator_<U> iterator_;
+    typename List<Bucket, Alloc>::template iterator_<U> list_iterator_;
   };
 
  public:
-  using iterator = base_iterator<Bucket, NodeType>;
-  using const_iterator = base_iterator<const Bucket, const NodeType>;
+  using iterator = iterator_<Bucket, NodeType>;
+  using const_iterator = iterator_<const Bucket, const NodeType>;
 
   iterator find(const Key& key);
   const_iterator find(const Key& key) const;
@@ -625,64 +624,61 @@ template <typename Key, typename Value, typename Hash, typename Equal,
           typename Alloc>
 template <typename U, typename L>
 typename UnorderedMap<Key, Value, Hash, Equal,
-                      Alloc>::template base_iterator<U, L>::reference
+                      Alloc>::template iterator_<U, L>::reference
     UnorderedMap<Key, Value, Hash, Equal,
-                 Alloc>::template base_iterator<U, L>::operator*() const {
-  return (*iterator_).value_;
+                 Alloc>::template iterator_<U, L>::operator*() const {
+  return list_iterator_->value_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
           typename Alloc>
 template <typename U, typename L>
 typename UnorderedMap<Key, Value, Hash, Equal,
-                      Alloc>::template base_iterator<U, L>::pointer
+                      Alloc>::template iterator_<U, L>::pointer
     UnorderedMap<Key, Value, Hash, Equal,
-                 Alloc>::template base_iterator<U, L>::operator->() const {
-  return &(*iterator_).value_;
+                 Alloc>::template iterator_<U, L>::operator->() const {
+  return &list_iterator_->value_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
           typename Alloc>
 template <typename U, typename L>
-typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template base_iterator<
-    U, L>& UnorderedMap<Key, Value, Hash, Equal,
-                        Alloc>::template base_iterator<U, L>::operator++() {
-  ++iterator_;
+typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template iterator_<U, L>&
+    UnorderedMap<Key, Value, Hash, Equal,
+                 Alloc>::template iterator_<U, L>::operator++() {
+  ++list_iterator_;
   return *this;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
           typename Alloc>
 template <typename U, typename L>
-typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template base_iterator<U,
-                                                                              L>
+typename UnorderedMap<Key, Value, Hash, Equal, Alloc>::template iterator_<U, L>
     UnorderedMap<Key, Value, Hash, Equal,
-                 Alloc>::template base_iterator<U, L>::operator++(int) {
-  base_iterator<U, L> to_return(iterator_);
-  ++iterator_;
+                 Alloc>::template iterator_<U, L>::operator++(int) {
+  iterator_<U, L> to_return(list_iterator_);
+  ++list_iterator_;
   return to_return;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
           typename Alloc>
 template <typename U, typename L>
-bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::
-    template base_iterator<U, L>::operator==(
-        const typename UnorderedMap<Key, Value, Hash, Equal,
-                                    Alloc>::template base_iterator<U, L>& other)
-        const {
-  return iterator_ == other.iterator_;
+bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::template iterator_<U, L>::
+operator==(
+    const typename UnorderedMap<Key, Value, Hash, Equal,
+                                Alloc>::template iterator_<U, L>& other) const {
+  return list_iterator_ == other.list_iterator_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
           typename Alloc>
 template <typename U, typename L>
-bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::
-    template base_iterator<U, L>::operator!=(
-        const typename UnorderedMap<Key, Value, Hash, Equal,
-                                    Alloc>::template base_iterator<U, L>& other)
-        const {
-  return iterator_ != other.iterator_;
+bool UnorderedMap<Key, Value, Hash, Equal, Alloc>::template iterator_<U, L>::
+operator!=(
+    const typename UnorderedMap<Key, Value, Hash, Equal,
+                                Alloc>::template iterator_<U, L>& other) const {
+  return list_iterator_ != other.list_iterator_;
 }
 
 template <typename Key, typename Value, typename Hash, typename Equal,
@@ -765,11 +761,11 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::emplace(Args&&... args) {
     array_[index] = new_node;
   } else {
     iterator iter(array_[index]);
-    while (iter.iterator_ != list_.end() &&
-           iter.iterator_->hash % array_.size() == index) {
+    while (iter.list_iterator_ != list_.end() &&
+           iter.list_iterator_->hash % array_.size() == index) {
       ++iter;
     }
-    place_to_insert = iter.iterator_.getNode();
+    place_to_insert = iter.list_iterator_.getNode();
   }
   new_node->prev = place_to_insert->prev;
   new_node->next = place_to_insert;
@@ -789,17 +785,17 @@ void UnorderedMap<Key, Value, Hash, Equal, Alloc>::rehash(size_t count) {
   for (iterator it = begin(); it != end(); it = next_it) {
     next_it = it;
     ++next_it;
-    size_t index = it.iterator_->hash % array_.size();
+    size_t index = it.list_iterator_->hash % array_.size();
     if (array_[index] == nullptr) {
-      new_list.insertNode(new_list.end(), it.iterator_.getNode());
-      array_[index] = it.iterator_.getNode();
+      new_list.insertNode(new_list.end(), it.list_iterator_.getNode());
+      array_[index] = it.list_iterator_.getNode();
     } else {
       iterator iter(array_[index]);
-      while (iter.iterator_ != new_list.end() &&
-             iter.iterator_->hash % array_.size() == index) {
+      while (iter.list_iterator_ != new_list.end() &&
+             iter.list_iterator_->hash % array_.size() == index) {
         ++iter;
       }
-      new_list.insertNode(iter.iterator_, it.iterator_.getNode());
+      new_list.insertNode(iter.list_iterator_, it.list_iterator_.getNode());
     }
   }
   list_ = std::move(new_list);
@@ -847,15 +843,15 @@ UnorderedMap<Key, Value, Hash, Equal, Alloc>::erase(
     size_t index = Hash{}(pos->first) % array_.size();
     auto to_return = pos;
     ++to_return;
-    if (array_[index] == pos.iterator_.getNode()) {
+    if (array_[index] == pos.list_iterator_.getNode()) {
       auto temp = pos;
-      if (++temp.iterator_->hash % array_.size() == index) {
-        array_[index] = pos.iterator_.getNode()->next;
+      if (++temp.list_iterator_->hash % array_.size() == index) {
+        array_[index] = pos.list_iterator_.getNode()->next;
       } else {
         array_[index] = nullptr;
       }
     }
-    list_.erase(pos.iterator_);
+    list_.erase(pos.list_iterator_);
     return to_return;
   } catch (...) {
     throw;
