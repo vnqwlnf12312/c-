@@ -20,7 +20,7 @@ struct ControlBlockAllocateShared : BaseControlBlock {
   void destroyThis() override;
   void useDeleter() override;
   Alloc alloc;
-  alignas(U) char elem[sizeof(U)];
+  alignas(U) size_8t elem[sizeof(U)];
 };
 template <typename U, typename Alloc, typename Deleter>
 struct ControlBlockRegular : BaseControlBlock {
@@ -33,7 +33,7 @@ struct ControlBlockRegular : BaseControlBlock {
   Alloc alloc;
   U* elem = nullptr;
 };
-}  // namespace ControlBlock
+} 
 
 template <typename T>
 class SharedPtr {
