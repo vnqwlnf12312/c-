@@ -2,30 +2,31 @@
 #include "vector"
 
 template <typename T, typename Allocator>
-class List {  // без этого объявления я не могу объявить итератор
+class List {
  private:
   struct BaseNode {
-    BaseNode* prev;
-    BaseNode* next;
     BaseNode(BaseNode* prev, BaseNode* next);
     explicit BaseNode(BaseNode&& other);
     BaseNode& operator=(BaseNode&& other);
     ~BaseNode() = default;
+    BaseNode* prev;
+    BaseNode* next;
   };
   struct Node : BaseNode {
-    T value;
     Node(BaseNode* prev, BaseNode* next, int hash);
     Node(BaseNode* prev, BaseNode* next, const T& value, int hash);
     ~Node() = default;
+    T value;
   };
   using NodeAlloc =
       typename std::allocator_traits<Allocator>::template rebind_alloc<Node>;
-  BaseNode end_;
-  size_t size_;
-  NodeAlloc node_alloc_;
 
   template <bool has_default_const>
   void construct(bool from_int, size_t size, const T* elem, const List* other);
+
+  BaseNode end_;
+  size_t size_;
+  NodeAlloc node_alloc_;
 
  public:
   template <typename Key, typename Value, typename Hash, typename Equal,
