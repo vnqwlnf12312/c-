@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "iostream"
 #include "memory"
 
@@ -8,32 +6,32 @@ class EnableSharedFromThis;
 
 namespace ControlBlock {
 struct BaseControlBlock {
-  int shared_count_ = 0;
-  int weak_count_ = 0;
   BaseControlBlock() = default;
   virtual void useDeleter() = 0;
   virtual void destroyThis() = 0;
   virtual ~BaseControlBlock() = default;
+  int shared_count = 0;
+  int weak_count = 0;
 };
 template <typename U, typename Alloc>
 struct ControlBlockAllocateShared : BaseControlBlock {
-  Alloc alloc_;
-  alignas(U) char elem_[sizeof(U)];
   template <typename... Args>
-  ControlBlockAllocateShared(Alloc alloc, Args&&... args);
+  ControlBlockAllocateShared(const Alloc& alloc, Args&&... args);
   void destroyThis() override;
   void useDeleter() override;
+  Alloc alloc;
+  alignas(U) char elem[sizeof(U)];
 };
 template <typename U, typename Alloc, typename Deleter>
 struct ControlBlockRegular : BaseControlBlock {
-  Deleter deleter_;
-  Alloc alloc_;
-  U* elem_ = nullptr;
   ControlBlockRegular() = default;
-  ControlBlockRegular(U* elem, Alloc alloc = std::allocator<U>(),
-                      Deleter deleter = std::default_delete<U>());
+  ControlBlockRegular(U* elem, const Alloc& alloc = std::allocator<U>(),
+                      const Deleter& deleter = std::default_delete<U>());
   void destroyThis() override;
   void useDeleter() override;
+  Deleter deleter;
+  Alloc alloc;
+  U* elem = nullptr;
 };
 }  // namespace ControlBlock
 
@@ -49,21 +47,21 @@ class SharedPtr {
                                                     std::is_base_of_v<T, U>>>
   explicit SharedPtr(U* elem);
   SharedPtr(const SharedPtr& other);
-  SharedPtr(SharedPtr&& other);
+  SharedPtr(SharedPtr&& other) noexcept;
   template <typename U, typename = std::enable_if_t<std::is_same_v<T, U> ||
                                                     std::is_base_of_v<T, U>>>
   SharedPtr(const SharedPtr<U>& other);
   template <typename U, typename = std::enable_if_t<std::is_same_v<T, U> ||
                                                     std::is_base_of_v<T, U>>>
-  SharedPtr(SharedPtr<U>&& other);
+  SharedPtr(SharedPtr<U>&& other) noexcept;
   SharedPtr& operator=(const SharedPtr& other);
-  SharedPtr& operator=(SharedPtr&& other);
+  SharedPtr& operator=(SharedPtr&& other) noexcept;
   template <typename U, typename = std::enable_if_t<std::is_same_v<T, U> ||
                                                     std::is_base_of_v<T, U>>>
   SharedPtr& operator=(const SharedPtr<U>& other);
   template <typename U, typename = std::enable_if_t<std::is_same_v<T, U> ||
                                                     std::is_base_of_v<T, U>>>
-  SharedPtr& operator=(SharedPtr<U>&& other);
+  SharedPtr& operator=(SharedPtr<U>&& other) noexcept;
   template <typename Y, typename Deleter>
   SharedPtr(Y* elem, const Deleter& deleter);
   template <typename Y, typename Deleter, typename Allocator>
@@ -95,9 +93,9 @@ class SharedPtr {
 template <typename U, typename Alloc>
 template <typename... Args>
 ControlBlock::ControlBlockAllocateShared<U, Alloc>::ControlBlockAllocateShared(
-    Alloc alloc, Args&&... args)
-    : alloc_(alloc) {
-  new (reinterpret_cast<U*>(elem_)) U(std::forward<Args>(args)...);
+    const Alloc& alloc, Args&&... args)
+    : alloc(alloc) {
+  new (reinterpret_cast<U*>(elem)) U(std::forward<Args>(args)...);
 }
 
 template <typename T, typename Alloc, typename... Args>
@@ -122,9 +120,9 @@ template <typename T>
 template <typename U, typename Alloc>
 SharedPtr<T>::SharedPtr(
     ControlBlock::ControlBlockAllocateShared<U, Alloc>* block)
-    : block_(block), elem_(reinterpret_cast<T*>(&block->elem_)) {
+    : block_(block), elem_(reinterpret_cast<T*>(&block->elem)) {
   if (block_) {
-    ++block_->shared_count_;
+    ++block_->shared_count;
   }
   if constexpr (std::is_base_of_v<EnableSharedFromThis<T>, T>) {
     elem_->weak_ptr_ = *this;
@@ -135,7 +133,7 @@ template <typename T>
 SharedPtr<T>::SharedPtr(ControlBlock::BaseControlBlock* block, T* elem)
     : block_(block), elem_(elem) {
   if (block_) {
-    ++block_->shared_count_;
+    ++block_->shared_count;
   }
   if constexpr (std::is_base_of_v<EnableSharedFromThis<T>, T>) {
     if (!elem_) {
@@ -147,9 +145,9 @@ SharedPtr<T>::SharedPtr(ControlBlock::BaseControlBlock* block, T* elem)
 
 template <typename U, typename Alloc, typename Deleter>
 ControlBlock::template ControlBlockRegular<
-    U, Alloc, Deleter>::ControlBlockRegular(U* elem, Alloc alloc,
-                                            Deleter deleter)
-    : deleter_(deleter), alloc_(alloc), elem_(elem) {}
+    U, Alloc, Deleter>::ControlBlockRegular(U* elem, const Alloc& alloc,
+                                            const Deleter& deleter)
+    : deleter(deleter), alloc(alloc), elem(elem) {}
 
 template <typename T>
 template <typename U, typename enable_if>
@@ -163,7 +161,7 @@ SharedPtr<T>::SharedPtr(U* elem)
     elem->weak_pointer_ = this;
   }
   if (block_) {
-    ++block_->shared_count_;
+    ++block_->shared_count;
   }
 }
 
@@ -172,9 +170,9 @@ void SharedPtr<T>::clear() {
   if (!block_) {
     return;
   }
-  --block_->shared_count_;
-  if (block_->shared_count_ == 0) {
-    if (block_->weak_count_ == 0) {
+  --block_->shared_count;
+  if (block_->shared_count == 0) {
+    if (block_->weak_count == 0) {
       block_->useDeleter();
       block_->destroyThis();
       block_ = nullptr;
@@ -198,28 +196,28 @@ template <typename U, typename Alloc>
 void ControlBlock::ControlBlockAllocateShared<U, Alloc>::useDeleter() {
   using UAlloc =
       typename std::allocator_traits<Alloc>::template rebind_alloc<U>;
-  UAlloc ualloc = alloc_;
-  std::allocator_traits<UAlloc>::destroy(ualloc, reinterpret_cast<U*>(&elem_));
+  UAlloc ualloc = alloc;
+  std::allocator_traits<UAlloc>::destroy(ualloc, reinterpret_cast<U*>(&elem));
 }
 
 template <typename U, typename Alloc>
 void ControlBlock::ControlBlockAllocateShared<U, Alloc>::destroyThis() {
   using SharedAlloc = typename std::allocator_traits<
       Alloc>::template rebind_alloc<ControlBlockAllocateShared<U, Alloc>>;
-  SharedAlloc shared_alloc = alloc_;
+  SharedAlloc shared_alloc = alloc;
   std::allocator_traits<SharedAlloc>::deallocate(shared_alloc, this, 1);
 }
 
 template <typename U, typename Alloc, typename Deleter>
 void ControlBlock::ControlBlockRegular<U, Alloc, Deleter>::useDeleter() {
-  deleter_(elem_);
+  deleter(elem);
 }
 
 template <typename U, typename Alloc, typename Deleter>
 void ControlBlock::ControlBlockRegular<U, Alloc, Deleter>::destroyThis() {
   using RegularAlloc = typename std::allocator_traits<
       Alloc>::template rebind_alloc<ControlBlockRegular<U, Alloc, Deleter>>;
-  RegularAlloc regular_alloc = alloc_;
+  RegularAlloc regular_alloc = alloc;
   std::allocator_traits<RegularAlloc>::deallocate(regular_alloc, this, 1);
 }
 
@@ -227,12 +225,12 @@ template <typename T>
 SharedPtr<T>::SharedPtr(const SharedPtr& other)
     : block_(other.block_), elem_(other.elem_) {
   if (block_) {
-    ++block_->shared_count_;
+    ++block_->shared_count;
   }
 }
 
 template <typename T>
-SharedPtr<T>::SharedPtr(SharedPtr&& other)
+SharedPtr<T>::SharedPtr(SharedPtr&& other) noexcept
     : block_(other.block_), elem_(other.elem_) {
   other.block_ = nullptr;
   other.elem_ = nullptr;
@@ -244,13 +242,13 @@ SharedPtr<T>::SharedPtr(const SharedPtr<U>& other)
     : block_(other.block_), elem_(other.elem_) {
   static_assert(std::is_base_of_v<T, U> || std::is_same_v<T, U>);
   if (block_) {
-    ++(block_->shared_count_);
+    ++(block_->shared_count);
   }
 }
 
 template <typename T>
 template <typename U, typename enable_if>
-SharedPtr<T>::SharedPtr(SharedPtr<U>&& other)
+SharedPtr<T>::SharedPtr(SharedPtr<U>&& other) noexcept
     : block_(other.block_), elem_(other.elem_) {
   static_assert(std::is_base_of_v<T, U> || std::is_same_v<T, U>);
   other.block_ = nullptr;
@@ -264,13 +262,13 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr& other) {
   }
   construct(other.block_, other.elem_);
   if (block_) {
-    ++block_->shared_count_;
+    ++block_->shared_count;
   }
   return *this;
 }
 
 template <typename T>
-SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) {
+SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr&& other) noexcept {
   if (this == &other) {
     return *this;
   }
@@ -289,14 +287,14 @@ SharedPtr<T>& SharedPtr<T>::operator=(const SharedPtr<U>& other) {
   }
   construct(other.block_, other.elem_);
   if (block_) {
-    ++block_->shared_count_;
+    ++block_->shared_count;
   }
   return *this;
 }
 
 template <typename T>
 template <typename U, typename enable_if>
-SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) {
+SharedPtr<T>& SharedPtr<T>::operator=(SharedPtr<U>&& other) noexcept {
   static_assert(std::is_base_of_v<T, U> || std::is_same_v<T, U>);
   if (this == reinterpret_cast<SharedPtr<T>*>(&other)) {
     return *this;
@@ -314,8 +312,8 @@ SharedPtr<T>::SharedPtr(Y* elem, const Deleter& deleter) {
       new ControlBlock::ControlBlockRegular<Y, std::allocator<Y>, Deleter>(
           elem, std::allocator<Y>(), deleter);
   block_ = block;
-  elem_ = block->elem_;
-  ++block_->shared_count_;
+  elem_ = block->elem;
+  ++block_->shared_count;
   if constexpr (std::is_base_of_v<EnableSharedFromThis<T>, T>) {
     elem->weak_pointer_ = this;
   }
@@ -333,8 +331,8 @@ SharedPtr<T>::SharedPtr(Y* elem, const Deleter& deleter, const Alloc& alloc) {
   new (block) ControlBlock::ControlBlockRegular<Y, Alloc, Deleter>(elem, alloc,
                                                                    deleter);
   block_ = block;
-  elem_ = block->elem_;
-  ++block_->shared_count_;
+  elem_ = block->elem;
+  ++block_->shared_count;
   if constexpr (std::is_base_of_v<EnableSharedFromThis<T>, T>) {
     elem->weak_pointer_ = this;
   }
@@ -342,7 +340,7 @@ SharedPtr<T>::SharedPtr(Y* elem, const Deleter& deleter, const Alloc& alloc) {
 
 template <typename T>
 int SharedPtr<T>::use_count() const {
-  return block_->shared_count_;
+  return block_->shared_count;
 }
 
 template <typename T>
@@ -359,9 +357,9 @@ void SharedPtr<T>::reset(Y* elem) {
   auto* block =
       new ControlBlock::ControlBlockRegular<Y, std::allocator<Y>,
                                             std::default_delete<Y>>(elem);
-  ++block->shared_count_;
+  ++block->shared_count;
   block_ = block;
-  elem_ = block->elem_;
+  elem_ = block->elem;
 }
 
 template <typename T>
@@ -418,13 +416,13 @@ class WeakPtr {
                                                     std::is_base_of_v<T, U>>>
   WeakPtr(WeakPtr<U>&& other);
   WeakPtr<T>& operator=(const WeakPtr& other);
-  WeakPtr<T>& operator=(WeakPtr&& other);
+  WeakPtr<T>& operator=(WeakPtr&& other) noexcept;
   template <typename U, typename = std::enable_if_t<std::is_same_v<T, U> ||
                                                     std::is_base_of_v<T, U>>>
   WeakPtr<T>& operator=(const WeakPtr<U>& other);
   template <typename U, typename = std::enable_if_t<std::is_same_v<T, U> ||
                                                     std::is_base_of_v<T, U>>>
-  WeakPtr<T>& operator=(WeakPtr<U>&& other);
+  WeakPtr<T>& operator=(WeakPtr<U>&& other) noexcept;
   bool expired() const;
   SharedPtr<T> lock() const;
   int use_count() const;
@@ -441,7 +439,7 @@ template <typename T>
 WeakPtr<T>::WeakPtr(const WeakPtr& other)
     : block_(other.block_), elem_(other.elem_) {
   if (block_) {
-    ++block_->weak_count_;
+    ++block_->weak_count;
   }
 }
 
@@ -457,7 +455,7 @@ template <typename U, typename enable_if>
 WeakPtr<T>::WeakPtr(const WeakPtr<U>& other)
     : block_(other.block_), elem_(other.elem_) {
   if (block_) {
-    ++block_->weak_count_;
+    ++block_->weak_count;
   }
 }
 
@@ -474,7 +472,7 @@ template <typename U, typename enable_if>
 WeakPtr<T>::WeakPtr(const SharedPtr<U>& sharedptr)
     : block_(sharedptr.block_), elem_(sharedptr.elem_) {
   if (block_) {
-    ++block_->weak_count_;
+    ++block_->weak_count;
   }
 }
 
@@ -495,13 +493,13 @@ WeakPtr<T>& WeakPtr<T>::operator=(const WeakPtr& other) {
   }
   construct(other.elem_, other.block_);
   if (block_) {
-    ++block_->weak_count_;
+    ++block_->weak_count;
   }
   return *this;
 }
 
 template <typename T>
-WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr&& other) {
+WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr&& other) noexcept {
   if (this == &other) {
     return *this;
   }
@@ -519,14 +517,14 @@ WeakPtr<T>& WeakPtr<T>::operator=(const WeakPtr<U>& other) {
   }
   construct(other.elem_, other.block_);
   if (block_) {
-    ++block_->weak_count_;
+    ++block_->weak_count;
   }
   return *this;
 }
 
 template <typename T>
 template <typename U, typename enable_if>
-WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) {
+WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) noexcept {
   if (this == &other) {
     return *this;
   }
@@ -538,7 +536,7 @@ WeakPtr<T>& WeakPtr<T>::operator=(WeakPtr<U>&& other) {
 
 template <typename T>
 bool WeakPtr<T>::expired() const {
-  return block_->shared_count_ == 0;
+  return block_->shared_count == 0;
 }
 
 template <typename T>
@@ -548,7 +546,7 @@ SharedPtr<T> WeakPtr<T>::lock() const {
 
 template <typename T>
 int WeakPtr<T>::use_count() const {
-  return block_->shared_count_;
+  return block_->shared_count;
 }
 
 template <typename T>
@@ -556,8 +554,8 @@ void WeakPtr<T>::clear() {
   if (!block_) {
     return;
   }
-  --block_->weak_count_;
-  if (block_->shared_count_ == 0 && block_->weak_count_ == 0) {
+  --block_->weak_count;
+  if (block_->shared_count == 0 && block_->weak_count == 0) {
     block_->destroyThis();
     block_ = nullptr;
     elem_ = nullptr;
@@ -571,6 +569,7 @@ WeakPtr<T>::~WeakPtr() {
 
 template <typename T>
 class EnableSharedFromThis {
+ public:
   template <typename U>
   friend class SharedPtr;
   SharedPtr<T> shared_from_this() const;
